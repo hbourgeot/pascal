@@ -1,58 +1,94 @@
-from flask import Blueprint,jsonify,request
+from flask import Blueprint, jsonify, request
 from models.entities.docente import Docente
 from models.docentemodel import DocenteModel
 from models.materiamodel import MateriaModel
 from models.entities.materias import Materias
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+from datetime import timedelta, datetime
 from models.entities.peticiones import Peticiones
 
+doc = Blueprint('docentes_blueprint', __name__)
 
-doc = Blueprint('docentes_blueprint',__name__)
-
-@doc.after_request 
+@doc.after_request
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
 
 @doc.route('/')
+@jwt_required()
 def get_docentes():
     try:
-
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         docentes = DocenteModel.get_docentes()
-        return jsonify({"ok": True, "status":200,"data": docentes})
-    
-    except Exception as ex:
-        return jsonify({"message": str(ex)}),500
 
-@doc.route('/<cedula>')
-def get_docente(cedula):
-    try:
-        docentes = DocenteModel.get_docente(cedula)
-        if docentes != None:
-            return jsonify({"ok": True, "status":200,"data":docentes})
-        else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "docente no encontrado"}}),404
-    
-    except Exception as ex:
-        print(ex)
-        return jsonify({"message": str(ex)}),500
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion="Obtener Docentes",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Docentes",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-@doc.route('/peticiones/<cedula>')
-def get_peticiones_por_docente(cedula):
-    try:
-        peticiones = DocenteModel.get_peticiones_por_docente(cedula)
-        return jsonify({"ok": True, "status": 200, "data": peticiones})
-
+        return jsonify({"ok": True, "status": 200, "data": docentes})
     except Exception as ex:
         return jsonify({"message": str(ex)}), 500
 
-    
-@doc.route('/add', methods = ["POST"])
+@doc.route('/<cedula>')
+@jwt_required()
+def get_docente(cedula):
+    try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        docente = DocenteModel.get_docente(cedula)
+        
+        if docente != None:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener Docente con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Docentes",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": docente})
+        else:
+            return jsonify({"ok": False, "status": 404, "data": {"message": "docente no encontrado"}}), 404
+    except Exception as ex:
+        return jsonify({"message": str(ex)}), 500
+
+@doc.route('/peticiones/<cedula>')
+@jwt_required()
+def get_peticiones_por_docente(cedula):
+    try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        peticiones = DocenteModel.get_peticiones_por_docente(cedula)
+
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion=f"Obtener Peticiones del Docente con cédula: {cedula}",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Docentes",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+        return jsonify({"ok": True, "status": 200, "data": peticiones})
+    except Exception as ex:
+        return jsonify({"message": str(ex)}), 500
+
+@doc.route('/add', methods=["POST"])
+@jwt_required()
 def add_docente():
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         cedula = request.json['cedula']
         fullname = request.json['fullname']
@@ -60,60 +96,89 @@ def add_docente():
         telefono = request.json['telefono']
         password = generate_password_hash(request.json["password"], method="sha256")
 
-        docente  = Docente(str(cedula),fullname,correo,telefono,password)
-
+        docente = Docente(str(cedula), fullname, correo, telefono, password)
         affected_rows = DocenteModel.add_docente(docente)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Añadir Docente con cédula: {cedula}, nombre: {fullname}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Docentes",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":500,"data":{"message": affected_rows}}), 500
-    
+            return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message":str(ex)}}), 500
-    
-@doc.route('/update/<cedula>', methods = ["PUT"])
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@doc.route('/update/<cedula>', methods=["PUT"])
+@jwt_required()
 def update_docente(cedula):
     try:
-    
-        cedula = request.json['cedula']
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+
         fullname = request.json['fullname']
         correo = request.json['correo']
         telefono = request.json['telefono']
-
         password = generate_password_hash(request.json["password"], method="sha256")
- 
-        docente = Docente(str(cedula),fullname,correo,telefono,password)
 
+        docente = Docente(str(cedula), fullname, correo, telefono, password)
         affected_rows = DocenteModel.update_docente(docente)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
-        else:
-            return jsonify({"ok": False, "status":500,"data":{"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
-    
-    except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar Docente con cédula: {cedula}, nombre: {fullname}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Docentes",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-@doc.route('/delete/<cedula>', methods = ["DELETE"])
+            return jsonify({"ok": True, "status": 200, "data": None})
+        else:
+            return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
+
+@doc.route('/delete/<cedula>', methods=["DELETE"])
+@jwt_required()
 def delete_docente(cedula):
     try:
-        
-        docente  = Docente(str(cedula))
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
+        docente = Docente(str(cedula))
         affected_rows = DocenteModel.delete_docente(docente)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data": None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Eliminar Docente con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Docentes",
+                nivel_alerta=3
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "docente no encontrado"}}) ,404
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "docente no encontrado"}}), 404
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @doc.route("/upload", methods=["PATCH"])
+@jwt_required()
 def modificar_materia_estudiante():
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+
         cedula_estudiante = request.json.get('cedula_estudiante')
         nombre_campo = request.json.get('nombre_campo')
         valor = request.json.get('valor')
@@ -121,47 +186,62 @@ def modificar_materia_estudiante():
         
         message = MateriaModel.modificar_materia_estudiante(materia, cedula_estudiante, nombre_campo, valor)
 
-        # Aquí llamarías a la función modificar_materia_estudiante con los valores recibidos
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion=f"Modificar materia del estudiante con cédula: {cedula_estudiante}, campo: {nombre_campo}, valor: {valor}",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Materias",
+            nivel_alerta=2
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
 
         return jsonify({"ok": True, "status": 200, "data": None}), 200
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
-@doc.route('/login',methods = ["POST"])
+@doc.route('/login', methods=["POST"])
 def login():
-    try: 
+    try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         docente = Docente(correo=usuario)
         docente = DocenteModel.login(docente)
-        if docente is not None:
-            if check_password_hash(docente.password, clave): # comprobamos que el hash sea igual a la clave ingrasada
-                access_token = create_access_token(identity=docente.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'D'}) # creamos el token que vive una hora
-                return jsonify({"ok":True, "status": 200, "data": {"docente": docente.to_JSON(), "access_token": f"Bearer {access_token}"}})
         
+        if docente is not None:
+            if check_password_hash(docente.password, clave):
+                access_token = create_access_token(identity=docente.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'D'})
+                
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Inicio de sesión del Docente: {usuario}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Autenticacion",
+                    nivel_alerta=1
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                return jsonify({"ok": True, "status": 200, "data": {"docente": docente.to_JSON(), "access_token": f"Bearer {access_token}"}})
             else:
-                return jsonify({"ok":False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
+                return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
         else:
-            return jsonify({"ok":False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
-
-
+            return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
-        return jsonify({"ok":False, "status": 500, "data": {"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @doc.route('/refresh')
 @jwt_required()
 def jwt_docente():
     try:
-        correo_docente = get_jwt_identity() # esto obtiene la identidad del token, en este caso, un correo
-        student: Docente | None # declaramos sin iniciar la variable del docente
+        correo_docente = get_jwt_identity()  # Esto obtiene la identidad del token, en este caso, un correo
+        docente: Docente | None  # Declaramos sin iniciar la variable del docente
         if correo_docente is not None:
-            student_entity = Docente(correo=correo_docente) # creamos la entidad del docente
-            student = DocenteModel.login(student_entity) #revisamos la bd
-            if student != None:
-                return jsonify({"ok": True, "status":200,"data":student.to_JSON()}) # retornamos si es correcto
-            
+            docente_entity = Docente(correo=correo_docente)  # Creamos la entidad del docente
+            docente = DocenteModel.login(docente_entity)  # Revisamos la bd
+            if docente != None:
+                return jsonify({"ok": True, "status": 200, "data": docente.to_JSON()})  # Retornamos si es correcto
         else:
-            return jsonify({"ok": False, "status":401,"data":{"message": "no autorizado"}}),401
-    
+            return jsonify({"ok": False, "status": 401, "data": {"message": "no autorizado"}}), 401
     except Exception as ex:
-        return jsonify({"message": str(ex)}),500
+        return jsonify({"message": str(ex)}), 500

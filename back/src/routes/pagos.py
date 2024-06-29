@@ -8,8 +8,12 @@ from models.entities.metodo import Metodo
 from models.transferenciamodel import TransferenciaModel
 from models.entities.transferencias import Transferencia
 from traceback import print_exc
-pago = Blueprint("pagos_blueprint", __name__)
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
 
+pago = Blueprint("pagos_blueprint", __name__)
 
 @pago.after_request
 def after_request(response):
@@ -17,50 +21,58 @@ def after_request(response):
     header["Access-Control-Allow-Origin"] = "*"
     return response
 
-
 @pago.route("/")
+@jwt_required()
 def get_pagos():
     try:
-        pago = PagoModel.get_pagos()
-        return jsonify({"ok": True, "status": 200, "data": pago})
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        pagos = PagoModel.get_pagos()
 
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion="Obtener todos los pagos",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Pagos",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+        return jsonify({"ok": True, "status": 200, "data": pagos})
     except Exception as ex:
         print(ex)
-        return (
-            jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}),
-            500,
-        )
-
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @pago.route("/<id>")
+@jwt_required()
 def get_pago(id):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         pago = PagoModel.get_pago(id)
-        if pago != None:
+        
+        if pago is not None:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener pago con id: {id}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Pagos",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
             return jsonify({"ok": True, "status": 200, "data": pago})
         else:
-            return (
-                jsonify(
-                    {
-                        "ok": False,
-                        "status": 404,
-                        "data": {"message": "Pago no encontrado"},
-                    }
-                ),
-                404,
-            )
-
+            return jsonify({"ok": False, "status": 404, "data": {"message": "Pago no encontrado"}}), 404
     except Exception as ex:
-        return (
-            jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}),
-            500,
-        )
-
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @pago.route("/add", methods=["POST"])
+@jwt_required()
 def add_pago():
-
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+
         cedula_estudiante = request.json['cedula_estudiante']
         descripcion = request.json["descripcion"]
         metodo_pago = request.json['metodo']
@@ -78,76 +90,57 @@ def add_pago():
             transf = Transferencia(None, str(referencia_transferencia))
             id_trans = TransferenciaModel.add_transferencia(transf)
 
-        pago = Pago(None, cedula_estudiante, metodo_id,monto_id, fecha_pago, id_trans)
+        pago = Pago(None, cedula_estudiante, metodo_id, monto_id, fecha_pago, id_trans)
         pagos, id_pago = PagoModel.add_pago(pago)
 
         if pagos == 1:
-             return jsonify({"ok": True, "status":200,"data":{"pagoId": id_pago}})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Añadir pago para el estudiante con cédula: {cedula_estudiante}, monto: {monto}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Pagos",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": {"pagoId": id_pago}})
         else:
-            return jsonify({"ok": False, "status":500,"data":None}), 500
-    
+            return jsonify({"ok": False, "status": 500, "data": None}), 500
     except Exception as ex:
         print_exc()
-        return (
-            jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}),
-            500,
-        )
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @pago.route("/update/<id>", methods=["PUT"])
+@jwt_required()
 def update_pago(id):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         cedula_estudiante = request.json['cedula_estudiante']
         metodo_pago_id = request.json['metodo_pago_id']
         monto_id = request.json['monto_id']
         fecha_pago = request.json['fecha_pago']
-        referencia_transferencia = request.json[' referencia_transferencia']
-      
+        referencia_transferencia = request.json['referencia_transferencia']
 
-        pago = (str(id),cedula_estudiante,metodo_pago_id,monto_id,fecha_pago,referencia_transferencia)
+        pago = Pago(str(id), cedula_estudiante, metodo_pago_id, monto_id, fecha_pago, referencia_transferencia)
         pagos = PagoModel.update_pago(pago)
 
         if pagos == 1:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar pago con id: {id} para el estudiante con cédula: {cedula_estudiante}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Pagos",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
             return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return (
-                jsonify(
-                    {
-                        "ok": False,
-                        "status": 500,
-                        "data": {"message": "Error al actualizar, compruebe los datos ingresados"},
-                    }
-                ),
-                500,
-            )
-
+            return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos ingresados"}}), 500
     except Exception as ex:
         print(ex)
-        return (
-            jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}),
-            500,
-        )
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
-
-# @pago.route("/count/month/<number>", methods=["GET"])
-# def count_month(number):
-#     try:
-#         count = pagoModel.count_month(number)
-#         return jsonify({"ok": True, "status": 200, "total": count})
-#     except Exception as ex:
-#         return (
-#             jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}),
-#             500,
-#         )
-
-
-# @pago.route("/count/day/<number>", methods=["GET"])
-# def count_day(number):
-#     try:
-#         count = pagoModel.count_day(number)
-#         return jsonify({"ok": True, "status": 200, "total": count})
-#     except Exception as ex:
-#         return (
-#             jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}),
-#             500,
-#         )

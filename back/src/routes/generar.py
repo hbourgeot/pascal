@@ -1,77 +1,86 @@
-from flask import Blueprint,jsonify,render_template,send_file
+from flask import Blueprint, jsonify, render_template, send_file
 from models.studentsmodel import StudentModel
 from models.carreramodel import CarreraModel
 from models.materiamodel import MateriaModel
-from datetime import date
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import date, datetime
 import pdfkit
 import io
 import traceback
+import os
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
 
-generar_pdf = Blueprint('generar_blueprint',__name__)
-@generar_pdf.after_request 
+generar_pdf = Blueprint('generar_blueprint', __name__)
+
+@generar_pdf.after_request
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
 
-
+BINPATH = os.getenv('BINPATH', 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
 
 @generar_pdf.route('/<cedula>')
+@jwt_required()
 def generar(cedula):
-
-    BINPATH = "C:\\Program Files\\wkhtmltopdf\\bin\wkhtmltopdf.exe"
-
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         student = StudentModel.get_student(cedula)
-        if student != None:
+        if student is not None:
             notas = StudentModel.get_materias_inscritas(cedula)
-            print(student)
             carrera = CarreraModel.get_carrera(student["carrera"])
-            print(carrera)
             config = pdfkit.configuration(wkhtmltopdf=BINPATH)
 
             student["carrera"] = carrera["nombre"]
             fecha_actual = date.today().strftime("%d/%m/%Y")
-            res = render_template('fichaEstudiantes.html',student=student,materias=notas["contenido"], fecha_actual = fecha_actual)
+            res = render_template('fichaEstudiantes.html', student=student, materias=notas["contenido"], fecha_actual=fecha_actual)
             pdf = pdfkit.from_string(res, configuration=config, options={"enable-local-file-access": True})
-            # Crear un objeto BytesIO y establecer el PDF generado como su contenido
             pdf_blob = io.BytesIO(pdf)
 
-            # Establecer las cabeceras de la respuesta
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Generar PDF de estudiante con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Generar PDF",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
             return send_file(path_or_file=pdf_blob, download_name="ficha_estudiantil.pdf", as_attachment=True)
-            
-        
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "Estudiante no encontrado"}}),404
-        
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "Estudiante no encontrado"}}), 404
     except Exception as ex:
         traceback.print_exc()
-        return jsonify({"message": str(ex)}),500
+        return jsonify({"message": str(ex)}), 500
 
 @generar_pdf.route('/docenteria')
+@jwt_required()
 def docenteria():
-
-    BINPATH = "/usr/bin/wkhtmltopdf"
-
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         join = MateriaModel.get_docenteria()
-        if join != None:
+        if join is not None:
             config = pdfkit.configuration(wkhtmltopdf=BINPATH)
             fecha_actual = date.today().strftime("%d/%m/%Y")
-            res = render_template('docenteria.html',materias=join, fecha_actual = fecha_actual)
+            res = render_template('docenteria.html', materias=join, fecha_actual=fecha_actual)
             pdf = pdfkit.from_string(res, configuration=config, options={"enable-local-file-access": True})
-            # Crear un objeto BytesIO y establecer el PDF generado como su contenido
             pdf_blob = io.BytesIO(pdf)
 
-            # Establecer las cabeceras de la respuesta
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion="Generar PDF de docenteria",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Generar PDF",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
             return send_file(path_or_file=pdf_blob, download_name="docentes_materias.pdf", as_attachment=True)
-            
-        
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "Estudiante no encontrado"}}),404
-        
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "Datos no encontrados"}}), 404
     except Exception as ex:
         traceback.print_exc()
-        return jsonify({"message": str(ex)}),500
+        return jsonify({"message": str(ex)}), 500

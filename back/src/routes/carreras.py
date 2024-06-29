@@ -1,7 +1,10 @@
-from flask import Blueprint,jsonify,request
+from flask import Blueprint, jsonify, request
 from models.carreramodel import CarreraModel
 from models.entities.carreras import Carrera
-from werkzeug.security import generate_password_hash, check_password_hash
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
 
 carrera = Blueprint('carrera_blueprint', __name__)
 
@@ -12,86 +15,128 @@ def after_request(response):
     return response
 
 @carrera.route('/')
+@jwt_required()
 def get_carreras():
-
     try:
-            carreras = CarreraModel.get_carreras()
-            return jsonify({"ok": True, "status":200,"data": carreras})
-            
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        carreras = CarreraModel.get_carreras()
+
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion="Obtener Carreras",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Carreras",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+        return jsonify({"ok": True, "status": 200, "data": carreras})
     except Exception as ex:
-        return jsonify({"message": str(ex)}),500
-    
+        return jsonify({"message": str(ex)}), 500
+
 @carrera.route('/<id>')
+@jwt_required()
 def get_carrera(id):
-     
     try:
-           
-        carreras = CarreraModel.get_carrera(id)
-        if carreras != None:
-            return jsonify({"ok": True, "status":200,"data":carreras})
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        carrera = CarreraModel.get_carrera(id)
+        
+        if carrera is not None:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener Carrera con id: {id}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Carreras",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": carrera})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "carrera no encontrada"}}),404
-    
-
+            return jsonify({"ok": False, "status": 404, "data": {"message": "carrera no encontrada"}}), 404
     except Exception as ex:
-        print(ex)
-        return jsonify({"message": str(ex)}),500
-    
+        return jsonify({"message": str(ex)}), 500
 
-@carrera.route('/add', methods = ['POST'])
+@carrera.route('/add', methods=['POST'])
+@jwt_required()
 def add_carrera():
-
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         id = request.json['id']
         nombre = request.json['nombre']
 
-        carrera = Carrera(str(id),nombre)
-
+        carrera = Carrera(str(id), nombre)
         affected_rows = CarreraModel.add_carrera(carrera)
 
         if affected_rows == 1:
-                return jsonify({"ok": True, "status":200,"data":None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Añadir Carrera con id: {id}, nombre: {nombre}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Carreras",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":500,"data":{"message": affected_rows}}), 500
-        
+            return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message":str(ex)}}), 500
-    
-@carrera.route('/update/<id>', methods = ['PUT'])
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@carrera.route('/update/<id>', methods=['PUT'])
+@jwt_required()
 def update_carrera(id):
-     
     try:
-        
-        id = request.json['id']
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+
         nombre = request.json['nombre']
-
-        carrera = Carrera(str(id),nombre)
-
+        carrera = Carrera(str(id), nombre)
         affected_rows = CarreraModel.update_carrera(carrera)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
-        
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar Carrera con id: {id}, nombre: {nombre}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Carreras",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":500,"data":{"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
-        
+            return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
 
-@carrera.route('/delete/<id>', methods = [ 'DELETE'])
+@carrera.route('/delete/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_carrera(id):
-
     try:
-        
-        carrera  = Carrera(str(id))
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
+        carrera = Carrera(str(id))
         affected_rows = CarreraModel.delete_carrera(carrera)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data": None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Eliminar Carrera con id: {id}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Carreras",
+                nivel_alerta=3
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "carrera no encontrada"}}) ,404
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "carrera no encontrada"}}), 404
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

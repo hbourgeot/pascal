@@ -1,134 +1,189 @@
 from datetime import datetime, timedelta
-
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-
 from models.entities.SuperUsuario import SuperUsuario
 from models.SuperUsuarioModel import SuperUsuarioModel
-from flask import Blueprint,jsonify,request
+from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
 
-from models.entities.students import Student
-from models.studentsmodel import StudentModel
+superUs = Blueprint('superUsuario_Blueprint', __name__)
 
-superUs = Blueprint('superUsuario_Blueprint',__name__)
-
-@superUs.after_request 
+@superUs.after_request
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
 
 @superUs.route('/<cedula>')
+@jwt_required()
 def get_Super(cedula):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         superUs = SuperUsuarioModel.get_super_user(cedula)
-        if super != None:
-            return jsonify({"ok": True, "status":200,"data":superUs})
+        
+        if superUs is not None:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener super usuario con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="SuperUsuario",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": superUs})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "super usuario no encontrado"}}),404
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "super usuario no encontrado"}}), 404
     except Exception as ex:
         print(ex)
-        return jsonify({"message": str(ex)}),500
-    
-@superUs.route('/add', methods = ["POST"])
+        return jsonify({"message": str(ex)}), 500
+
+@superUs.route('/add', methods=["POST"])
+@jwt_required()
 def add_Super():
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         cedula = request.json['cedula']
         nombre = request.json['nombre']
         correo = request.json['correo']
         password = generate_password_hash(request.json["password"], method="sha256")
 
-        superUs  = SuperUsuario(str(cedula),nombre,correo,password)
-
+        superUs = SuperUsuario(str(cedula), nombre, correo, password)
         affected_rows = SuperUsuarioModel.add_super_user(superUs)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Añadir super usuario con cédula: {cedula}, nombre: {nombre}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="SuperUsuario",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":500,"data":{"message": affected_rows}}), 500
-    
+            return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message":str(ex)}}), 500
-    
-@superUs.route('/update/<cedula>', methods = ["PUT"])
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@superUs.route('/update/<cedula>', methods=["PUT"])
+@jwt_required()
 def update_Super(cedula):
     try:
-    
-        cedula = request.json['cedula']
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+
         nombre = request.json['nombre']
         correo = request.json['correo']
         password = generate_password_hash(request.json["password"], method="sha256")
- 
-        superUs = SuperUsuario(str(cedula),nombre,correo,password)
 
+        superUs = SuperUsuario(str(cedula), nombre, correo, password)
         affected_rows = SuperUsuarioModel.update_super_user(superUs)
-        print(affected_rows)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
-        else:
-            return jsonify({"ok": False, "status":500,"data":{"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
-    
-    except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar super usuario con cédula: {cedula}, nombre: {nombre}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="SuperUsuario",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-@superUs.route('/delete/<cedula>', methods = ["DELETE"])
+            return jsonify({"ok": True, "status": 200, "data": None})
+        else:
+            return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@superUs.route('/delete/<cedula>', methods=["DELETE"])
+@jwt_required()
 def delete_Super(cedula):
     try:
-        
-        superUs = SuperUsuario(str(cedula))
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
+        superUs = SuperUsuario(str(cedula))
         affected_rows = SuperUsuarioModel.delete_super_user(superUs)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data": None})
-        else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "super usuario no encontrado"}}) ,404
-    
-    except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Eliminar super usuario con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="SuperUsuario",
+                nivel_alerta=3
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-@superUs.route('/login',methods = ["POST"])
+            return jsonify({"ok": True, "status": 200, "data": None})
+        else:
+            return jsonify({"ok": False, "status": 404, "data": {"message": "super usuario no encontrado"}}), 404
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@superUs.route('/login', methods=["POST"])
 def login():
     try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         super_usuario = SuperUsuario(correo=usuario)
         super_usuario = SuperUsuarioModel.login(super_usuario)
+        
         if super_usuario is not None:
-            print(super_usuario.to_JSON())
-            if check_password_hash(super_usuario.password, clave): # comprobamos que el hash sea igual a la clave ingrasada
+            if check_password_hash(super_usuario.password, clave):  # comprobamos que el hash sea igual a la clave ingresada
+                access_token = create_access_token(identity=super_usuario.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'S'})
+                
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Inicio de sesión del super usuario con cédula: {super_usuario.cedula}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Autenticacion",
+                    nivel_alerta=1
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-                access_token = create_access_token(identity=super_usuario.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'S'}) # creamos el token que vive una hora
                 return jsonify({"ok": True, "status": 200, "data": {"superUsuario": super_usuario.to_JSON(), "access_token": f"Bearer {access_token}"}})
-
             else:
                 return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
         else:
-            return jsonify({"ok":False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
-
-
+            return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
         print(ex)
-        return jsonify({"ok":False, "status": 500, "data": {"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @superUs.route('/refresh')
 @jwt_required()
 def jwt_super():
     try:
-        correo_super = get_jwt_identity() # esto obtiene la identidad del token, en este caso, un correo
-        super_entity: SuperUsuario | None # declaramos sin iniciar la variable del estudiante
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        correo_super = usuario
+        super_entity: SuperUsuario | None
+        
         if correo_super is not None:
-            super_entity = SuperUsuario(correo=correo_super) # creamos la entidad del estudiante
-            super_entity = SuperUsuarioModel.login(super_entity) #revisamos la bd
-            if super_entity != None:
-                return jsonify({"ok": True, "status":200,"data":super_entity.to_JSON()}) # retornamos si es correcto
+            super_entity = SuperUsuario(correo=correo_super)
+            super_entity = SuperUsuarioModel.login(super_entity)
+            
+            if super_entity is not None:
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Refrescar sesión del super usuario con cédula: {super_entity.cedula}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Autenticacion",
+                    nivel_alerta=1
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-        else:
-            return jsonify({"ok": False, "status":401,"data":{"message": "no autorizado"}}),401
-
+                return jsonify({"ok": True, "status": 200, "data": super_entity.to_JSON()})
+            else:
+                return jsonify({"ok": False, "status": 401, "data": {"message": "no autorizado"}}), 401
     except Exception as ex:
         print(ex)
-        return jsonify({"message": str(ex)}),500
+        return jsonify({"message": str(ex)}), 500

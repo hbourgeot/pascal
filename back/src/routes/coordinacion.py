@@ -1,12 +1,14 @@
 from models.entities.coordinacion import Coordinacion
 from models.coordinacionmodel import CoordinacionModel
 from models.studentsmodel import StudentModel, Student
-from flask import Blueprint,jsonify,request
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+from datetime import timedelta, datetime
 
-coordinacion = Blueprint('coordinacion_blueprint',__name__)
+coordinacion = Blueprint('coordinacion_blueprint', __name__)
 
 @coordinacion.after_request 
 def after_request(response):
@@ -15,31 +17,56 @@ def after_request(response):
     return response
 
 @coordinacion.route('/')
+@jwt_required()
 def get_coordinadores():
     try:
-
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         coordinadores = CoordinacionModel.get_coordinadores()
-        return jsonify({"ok": True, "status":200,"data": coordinadores})
-    
+
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion="Obtener Coordinadores",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Coordinacion",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+        return jsonify({"ok": True, "status":200, "data": coordinadores})
     except Exception as ex:
-        return jsonify({"message": str(ex)}),500
+        return jsonify({"message": str(ex)}), 500
 
 @coordinacion.route('/<cedula>')
+@jwt_required()
 def get_coordinador(cedula):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         coordinador = CoordinacionModel.get_coordinador(cedula)
+        
         if coordinador != None:
-            return jsonify({"ok": True, "status":200,"data":coordinador})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener Coordinador con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Coordinacion",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status":200, "data": coordinador})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "coordinador no encontrado"}}),404
-    
+            return jsonify({"ok": False, "status":404, "data":{"message": "coordinador no encontrado"}}), 404
     except Exception as ex:
         print(ex)
-        return jsonify({"message": str(ex)}),500
-    
-@coordinacion.route('/add', methods = ["POST"])
+        return jsonify({"message": str(ex)}), 500
+
+@coordinacion.route('/add', methods=["POST"])
+@jwt_required()
 def add_coordinador():
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         cedula = request.json['cedula']
         fullname = request.json['fullname']
@@ -47,102 +74,150 @@ def add_coordinador():
         telefono = request.json['telefono']
         password = generate_password_hash(request.json["password"], method="sha256")
 
-        coordinador  = Coordinacion(str(cedula),fullname,correo,telefono,password)
-
+        coordinador = Coordinacion(str(cedula), fullname, correo, telefono, password)
         affected_rows = CoordinacionModel.add_coordinador(coordinador)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Añadir Coordinador con cédula: {cedula}, nombre: {fullname}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Coordinacion",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":500,"data":{"message": affected_rows}}), 500
-    
+            return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message":str(ex)}}), 500
-    
-@coordinacion.route('/update/<cedula>', methods = ["PUT"])
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@coordinacion.route('/update/<cedula>', methods=["PUT"])
+@jwt_required()
 def update_coordinador(cedula):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         fullname = request.json['fullname']
         correo = request.json['correo']
         telefono = request.json['telefono']
-
         password = generate_password_hash(request.json["password"], method="sha256")
- 
-        coordinador = Coordinacion(str(cedula),fullname,correo,telefono,password)
 
+        coordinador = Coordinacion(str(cedula), fullname, correo, telefono, password)
         affected_rows = CoordinacionModel.update_coordinador(coordinador)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data":None})
-        else:
-            return jsonify({"ok": False, "status":500,"data":{"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
-    
-    except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar Coordinador con cédula: {cedula}, nombre: {fullname}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Coordinacion",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-@coordinacion.route('/delete/<cedula>', methods = ["DELETE"])
+            return jsonify({"ok": True, "status": 200, "data": None})
+        else:
+            return jsonify({"ok": False, "status": 500, "data": {"message": "Error al actualizar, compruebe los datos e intente nuevamente"}}), 500
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+@coordinacion.route('/delete/<cedula>', methods=["DELETE"])
+@jwt_required()
 def delete_coordinador(cedula):
     try:
-        
-        coordinador  =  Coordinacion(str(cedula))
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
+        coordinador = Coordinacion(str(cedula))
         affected_rows = CoordinacionModel.delete_coordinador(coordinador)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data": None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Eliminar Coordinador con cédula: {cedula}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Coordinacion",
+                nivel_alerta=3
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "coordinador no encontrado"}}) ,404
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "coordinador no encontrado"}}), 404
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @coordinacion.route("/materias/<cedula>", methods=["GET"])
+@jwt_required()
 def get_nota(cedula: str):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+
         notas_obj = StudentModel.get_notas_estudiante(cedula)
+        
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion=f"Obtener Notas del Estudiante con cédula: {cedula}",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Estudiante",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
+
         return jsonify({"ok": True, "status": 200, "data": notas_obj}), 200
     except Exception as ex:
-        return jsonify({"ok": False, "status": 500, "data": {"mess age": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
-@coordinacion.route('/login',methods = ["POST"])
+@coordinacion.route('/login', methods=["POST"])
 def login():
-    try: 
+    try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         coordinador = Coordinacion(correo=usuario)
         coordinador = CoordinacionModel.login(coordinador)
-        if coordinador is not None:
-            if check_password_hash(coordinador.password, clave): # comprobamos que el hash sea igual a la clave ingrasada
-                access_token = create_access_token(identity=coordinador.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'CO'}) # creamos el token que vive una hora
-                return jsonify({"ok":True, "status": 200, "data": {"coordinador": coordinador.to_JSON(), "access_token": f"Bearer {access_token}"}})
         
+        if coordinador is not None:
+            if check_password_hash(coordinador.password, clave):
+                access_token = create_access_token(identity=coordinador.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'CO'})
+                
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Inicio de sesión del Coordinador: {usuario}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Autenticacion",
+                    nivel_alerta=1
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                return jsonify({"ok": True, "status": 200, "data": {"coordinador": coordinador.to_JSON(), "access_token": f"Bearer {access_token}"}})
             else:
-                return jsonify({"ok":False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
+                return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
         else:
-            return jsonify({"ok":False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
-
-
+            return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
-        return jsonify({"ok":False, "status": 500, "data": {"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @coordinacion.route('/refresh')
 @jwt_required()
 def jwt_coordinador():
     try:
-        correo_coordinador = get_jwt_identity() # esto obtiene la identidad del token, en este caso, un correo
-        coordinador: Coordinacion | None # declaramos sin iniciar la variable del coordinador
+        correo_coordinador = get_jwt_identity()  # Esto obtiene la identidad del token, en este caso, un correo
+        coordinador: Coordinacion | None  # Declaramos sin iniciar la variable del coordinador
         if correo_coordinador is not None:
-            coordinador_entity = Coordinacion(correo=correo_coordinador) # creamos la entidad del coordinador
-            coordinador = CoordinacionModel.login(coordinador_entity) #revisamos la bd
+            coordinador_entity = Coordinacion(correo=correo_coordinador)  # Creamos la entidad del coordinador
+            coordinador = CoordinacionModel.login(coordinador_entity)  # Revisamos la bd
             if coordinador != None:
-                return jsonify({"ok": True, "status":200,"data":coordinador.to_JSON()}) # retornamos si es correcto
-            
+                return jsonify({"ok": True, "status": 200, "data": coordinador.to_JSON()})  # Retornamos si es correcto
         else:
-            return jsonify({"ok": False, "status":401,"data":{"message": "no autorizado"}}),401
-    
+            return jsonify({"ok": False, "status": 401, "data": {"message": "no autorizado"}}), 401
     except Exception as ex:
-        return jsonify({"message": str(ex)}),500
+        return jsonify({"message": str(ex)}), 500
 
 @coordinacion.route('/promedio-ponderado/<cedula_estudiante>', methods=['GET'])
 @jwt_required()
@@ -157,9 +232,18 @@ def obtener_promedio_ponderado(cedula_estudiante):
         promedio_ponderado = CoordinacionModel.calcular_promedio_ponderado_estudiante(cedula_estudiante)
 
         if promedio_ponderado is not None:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener Promedio Ponderado del Estudiante con cédula: {cedula_estudiante}",
+                usuario=correo_autenticado,
+                fecha=datetime.now(),
+                modulo="Estudiante",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
             return jsonify({"ok": True, "status": 200, "data": {"promedio_ponderado": promedio_ponderado}}), 200
         else:
             return jsonify({"ok": False, "status": 404, "data": {"message": "No se encontraron notas para este estudiante"}}), 404
-
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

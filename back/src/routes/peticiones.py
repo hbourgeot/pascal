@@ -1,82 +1,127 @@
 import traceback
 from models.entities.peticiones import Peticiones
 from models.peticionesmodel import PeticionesModel
-from flask import Blueprint,jsonify,request
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
 
 peticion = Blueprint('peticion_blueprint', __name__)
 
-@peticion.after_request 
+@peticion.after_request
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
 
 @peticion.route('/')
+@jwt_required()
 def get_peticiones():
-
     try:
-
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         peticiones = PeticionesModel.get_peticiones()
-        return jsonify({"ok": True, "status":200,"data": peticiones})
-            
-    except Exception as ex:
-        return jsonify({"message": str(ex)}),500
 
-@peticion.route('/<id>')
-def get_peticion(id):
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion="Obtener todas las Peticiones",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Peticiones",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-    try:
-
-        peticiones = PeticionesModel.get_peticion(id)
-        if peticiones != None:
-            return jsonify({"ok": True, "status":200,"data":peticiones})
-        else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "peticion no disponible"}}),404
-    
-    except Exception as ex:
-            return jsonify({"message": str(ex)}),500
-
-@peticion.route('/pendientes')
-def get_peticiones_pendientes():
-    try:
-        peticiones_pendientes = PeticionesModel.get_peticiones_pendientes()
-        return jsonify({"ok": True, "status": 200, "data": peticiones_pendientes})
-
+        return jsonify({"ok": True, "status": 200, "data": peticiones})
     except Exception as ex:
         return jsonify({"message": str(ex)}), 500
 
-@peticion.route('/add' ,methods = ["POST"])
-def add_peticion():
-
+@peticion.route('/<id>')
+@jwt_required()
+def get_peticion(id):
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        peticiones = PeticionesModel.get_peticion(id)
+        
+        if peticiones is not None:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Obtener Petición con id: {id}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Peticiones",
+                nivel_alerta=1
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": peticiones})
+        else:
+            return jsonify({"ok": False, "status": 404, "data": {"message": "peticion no disponible"}}), 404
+    except Exception as ex:
+        return jsonify({"message": str(ex)}), 500
+
+@peticion.route('/pendientes')
+@jwt_required()
+def get_peticiones_pendientes():
+    try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        peticiones_pendientes = PeticionesModel.get_peticiones_pendientes()
+
+        # Registrar trazabilidad
+        trazabilidad = Trazabilidad(
+            accion="Obtener todas las Peticiones Pendientes",
+            usuario=usuario,
+            fecha=datetime.now(),
+            modulo="Peticiones",
+            nivel_alerta=1
+        )
+        TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+        return jsonify({"ok": True, "status": 200, "data": peticiones_pendientes})
+    except Exception as ex:
+        return jsonify({"message": str(ex)}), 500
+
+@peticion.route('/add', methods=["POST"])
+@jwt_required()
+def add_peticion():
+    try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
         id_docente = request.json['id_docente']
         descripcion = request.json['descripcion']
-
         estado = request.json['estado']
         if estado not in ["Aprobado", "Denegado", "Pendiente"]:
             return jsonify({'error': 'Valor inválido para el campo estado'}), 400
-        
         id_estudiante = request.json['id_estudiante']
         id_materia = request.json['id_materia']
         campo = request.json['campo']
 
-        peticion = Peticiones(None,id_docente,descripcion,estado,id_estudiante,id_materia,campo)
+        peticion = Peticiones(None, id_docente, descripcion, estado, id_estudiante, id_materia, campo)
         affected_rows = PeticionesModel.add_peticion(peticion)
 
         if affected_rows == 1:
-             return jsonify({"ok": True, "status":200,"data":None})
-        else:
-            return jsonify({"ok": False, "status":500,"data":{"message": affected_rows}}), 500
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Añadir Petición para el estudiante con cédula: {id_estudiante}, materia: {id_materia}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Peticiones",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
+            return jsonify({"ok": True, "status": 200, "data": None})
+        else:
+            return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500
     except Exception as ex:
         traceback.print_exc()
-        return jsonify({"ok": False, "status":500,"data":{"message":str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
-@peticion.route('/update/<id>', methods = ["PATCH"])
+@peticion.route('/update/<id>', methods=["PATCH"])
+@jwt_required()
 def update_peticion(id):
-
     try:
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
         data = request.json
 
         # Definimos una lista de campos permitidos para actualizar.
@@ -97,28 +142,45 @@ def update_peticion(id):
         affected_rows = PeticionesModel.update_peticion(peticion)
 
         if affected_rows == 1:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar Petición con id: {id}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Peticiones",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
             return jsonify({"ok": True, "status": 200, "data": None})
         else:
             return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500
-
-
     except Exception as ex:
         print(ex)
-        return jsonify({"ok": False, "status":500,"data":{"message":str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
-@peticion.route('/delete/<id>', methods = [ 'DELETE'])
+@peticion.route('/delete/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_peticion(id):
-
     try:
-        
-        peticion  = Peticiones(str(id))
+        usuario = get_jwt_identity()  # Extraer identidad del token JWT
 
+        peticion = Peticiones(str(id))
         affected_rows = PeticionesModel.delete_peticion(peticion)
 
         if affected_rows == 1:
-            return jsonify({"ok": True, "status":200,"data": None})
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Eliminar Petición con id: {id}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Peticiones",
+                nivel_alerta=3
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+            return jsonify({"ok": True, "status": 200, "data": None})
         else:
-            return jsonify({"ok": False, "status":404,"data":{"message": "peticion no encontrada"}}) ,404
-    
+            return jsonify({"ok": False, "status": 404, "data": {"message": "peticion no encontrada"}}), 404
     except Exception as ex:
-        return jsonify({"ok": False, "status":500,"data":{"message": str(ex)}}), 500
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
