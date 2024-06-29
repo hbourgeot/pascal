@@ -307,12 +307,12 @@ def login_estudiante():
                         if not pago_realizado:
                             return jsonify({"ok": False, "status": 401, "data": {"message": f"No has realizado el pago de la cuota {i}"}}), 401
 
-                access_token = create_access_token(identity=estudiante.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'E', 'nombre': estudiante.nombre})
+                access_token = create_access_token(identity=estudiante.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'E', 'nombre': estudiante.fullname})
 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Inicio de sesión del estudiante con cédula: {estudiante.cedula}",
-                    usuario=estudiante.correo,
+                    usuario=estudiante.fullname,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -333,9 +333,7 @@ def login_estudiante():
 @jwt_required()
 def jwt_student():
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
-        correo_estudiante = usuario
+        correo_estudiante = get_jwt_identity()  # Esto obtiene la identidad del token, en este caso, un correo
         student: Student | None
         if correo_estudiante is not None:
             student_entity = Student(correo=correo_estudiante)
@@ -344,7 +342,7 @@ def jwt_student():
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Refrescar sesión del estudiante con cédula: {student.cedula}",
-                    usuario=usuario,
+                    usuario=student.fullname,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1

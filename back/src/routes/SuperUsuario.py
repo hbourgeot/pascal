@@ -165,9 +165,7 @@ def login_super_usuario():
 @jwt_required()
 def jwt_super():
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
-        correo_super = usuario
+        correo_super = get_jwt_identity()
         super_entity: SuperUsuario | None
         
         if correo_super is not None:

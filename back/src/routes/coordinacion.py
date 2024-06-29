@@ -188,7 +188,7 @@ def login_coordinacion():
         coordinador = CoordinacionModel.login(coordinador)
         if coordinador is not None:
             if check_password_hash(coordinador.password, clave):
-                access_token = create_access_token(identity=coordinador.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CO', 'nombre': coordinador.nombre})
+                access_token = create_access_token(identity=coordinador.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CO', 'nombre': coordinador.fullname})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(

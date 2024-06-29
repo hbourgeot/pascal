@@ -215,7 +215,7 @@ def login_docente():
         docente = DocenteModel.login(docente)
         if docente is not None:
             if check_password_hash(docente.password, clave):
-                access_token = create_access_token(identity=docente.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'D', 'nombre': docente.nombre})
+                access_token = create_access_token(identity=docente.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'D', 'nombre': docente.fullname})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(

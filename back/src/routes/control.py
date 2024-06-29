@@ -163,7 +163,7 @@ def login_control():
         control_estudio = ControlModel.login(control_estudio)
         if control_estudio is not None:
             if check_password_hash(control_estudio.password, clave):
-                access_token = create_access_token(identity=control_estudio.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CE', 'nombre': control_estudio.nombre})
+                access_token = create_access_token(identity=control_estudio.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CE', 'nombre': control_estudio.fullname})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
