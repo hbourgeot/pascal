@@ -193,8 +193,7 @@ def login():
         estudiante = Student(correo=usuario)
         estudiante = StudentModel.login(estudiante)
         if estudiante is not None:
-            if check_password_hash(estudiante.password,
-                                   clave):  # comprobamos que el hash sea igual a la clave ingrasada
+            if check_password_hash(estudiante.password, clave):  # comprobamos que el hash sea igual a la clave ingrasada
                 # antes de crear el access token debe realizar la comprobación nombrada, guiate del codigo comentado 
                 pagos: list[Pago] = StudentModel.get_pago_by_student(estudiante.cedula)
                 config = ConfigModel.get_configuracion("1")
