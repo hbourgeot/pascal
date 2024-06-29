@@ -246,7 +246,7 @@
 <svelte:head>
   <title>Editar materias | Coordinadores | IUTEPAS</title>
 </svelte:head>
-<section class="min-h-screen">
+<section class="screen pb-8">
   <div
     class="container lg:w-4/5 md:w-5/6 mx-auto px-4 py-6 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
   >
@@ -616,7 +616,7 @@
   }
 
   .screen {
-    height: calc(100vh - 80px);
+    min-height: calc(100vh - 80px);
   }
 
   .select {
@@ -629,7 +629,7 @@
   }
 
   .screen {
-    height: calc(100vh - 80px);
+    min-height: calc(100vh - 80px);
   }
 
   :global(.text-field) {
