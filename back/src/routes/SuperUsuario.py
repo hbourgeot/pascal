@@ -128,21 +128,20 @@ def delete_Super(cedula):
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @superUs.route('/login', methods=["POST"])
-def login():
+def login_super_usuario():
     try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         super_usuario = SuperUsuario(correo=usuario)
         super_usuario = SuperUsuarioModel.login(super_usuario)
-        
         if super_usuario is not None:
-            if check_password_hash(super_usuario.password, clave):  # comprobamos que el hash sea igual a la clave ingresada
-                access_token = create_access_token(identity=super_usuario.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'S'})
+            if check_password_hash(super_usuario.password, clave):
+                access_token = create_access_token(identity=super_usuario.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'S', 'nombre': super_usuario.nombre})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Inicio de sesión del super usuario con cédula: {super_usuario.cedula}",
-                    usuario=usuario,
+                    usuario=super_usuario.correo,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -155,8 +154,8 @@ def login():
         else:
             return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
-        print(ex)
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
 
 @superUs.route('/refresh')
 @jwt_required()

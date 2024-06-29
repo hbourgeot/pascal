@@ -201,21 +201,20 @@ def modificar_materia_estudiante():
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @doc.route('/login', methods=["POST"])
-def login():
+def login_docente():
     try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         docente = Docente(correo=usuario)
         docente = DocenteModel.login(docente)
-        
         if docente is not None:
             if check_password_hash(docente.password, clave):
-                access_token = create_access_token(identity=docente.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'D'})
+                access_token = create_access_token(identity=docente.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'D', 'nombre': docente.nombre})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
-                    accion=f"Inicio de sesión del Docente: {usuario}",
-                    usuario=usuario,
+                    accion=f"Inicio de sesión del docente con cédula: {docente.cedula}",
+                    usuario=docente.correo,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -229,6 +228,7 @@ def login():
             return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
 
 @doc.route('/refresh')
 @jwt_required()

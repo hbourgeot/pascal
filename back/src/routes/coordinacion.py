@@ -174,21 +174,20 @@ def get_nota(cedula: str):
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @coordinacion.route('/login', methods=["POST"])
-def login():
+def login_coordinacion():
     try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         coordinador = Coordinacion(correo=usuario)
         coordinador = CoordinacionModel.login(coordinador)
-        
         if coordinador is not None:
             if check_password_hash(coordinador.password, clave):
-                access_token = create_access_token(identity=coordinador.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'CO'})
+                access_token = create_access_token(identity=coordinador.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CO', 'nombre': coordinador.nombre})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
-                    accion=f"Inicio de sesión del Coordinador: {usuario}",
-                    usuario=usuario,
+                    accion=f"Inicio de sesión del coordinador con cédula: {coordinador.cedula}",
+                    usuario=coordinador.correo,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -202,6 +201,7 @@ def login():
             return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
 
 @coordinacion.route('/refresh')
 @jwt_required()

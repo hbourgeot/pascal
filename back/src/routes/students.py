@@ -273,7 +273,7 @@ def get_horario():
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @main.route('/login', methods=["POST"])
-def login():
+def login_estudiante():
     try:
         fecha_actual = datetime.now()
         usuario = request.json.get('usuario', None)
@@ -281,17 +281,16 @@ def login():
         estudiante = Student(correo=usuario)
         estudiante = StudentModel.login(estudiante)
         if estudiante is not None:
-            if check_password_hash(estudiante.password, clave):  # comprobamos que el hash sea igual a la clave ingresada
+            if check_password_hash(estudiante.password, clave):
+                # Validar pagos
                 pagos: list[Pago] = StudentModel.get_pago_by_student(estudiante.cedula)
                 config = ConfigModel.get_configuracion("1")
 
-                # Validar pagos de pre-inscripción e inscripción
                 for concepto in ["pre_inscripcion", "inscripcion"]:
                     pago_realizado = any(pago.monto_id.concepto == concepto and pago.ciclo == config.ciclo for pago in pagos)
                     if not pago_realizado:
                         return jsonify({"ok": False, "status": 401, "data": {"message": f"No has realizado el pago de la {concepto.replace('_', ' ').capitalize()}"}}), 401
-                
-                # Validar pagos de cuotas por fechas
+
                 for i in range(1, 6):
                     fecha_cuota = getattr(config, f'cuota{i}').strftime("%Y-%m-%d")
                     if fecha_actual >= datetime.strptime(fecha_cuota, "%Y-%m-%d"):
@@ -299,12 +298,12 @@ def login():
                         if not pago_realizado:
                             return jsonify({"ok": False, "status": 401, "data": {"message": f"No has realizado el pago de la cuota {i}"}}), 401
 
-                access_token = create_access_token(identity=estudiante.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'E'})
-                
+                access_token = create_access_token(identity=estudiante.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'E', 'nombre': estudiante.nombre})
+
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Inicio de sesión del estudiante con cédula: {estudiante.cedula}",
-                    usuario=usuario,
+                    usuario=estudiante.correo,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -319,6 +318,7 @@ def login():
     except Exception as ex:
         traceback.print_exc()
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
 
 @main.route('/refresh')
 @jwt_required()

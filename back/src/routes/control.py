@@ -150,21 +150,20 @@ def delete_coordinador(cedula):
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @control.route('/login', methods=["POST"])
-def login():
+def login_control():
     try:
         usuario = request.json.get('usuario', None)
         clave = request.json.get('clave', None)
         control_estudio = Control(correo=usuario)
         control_estudio = ControlModel.login(control_estudio)
-        
         if control_estudio is not None:
             if check_password_hash(control_estudio.password, clave):
-                access_token = create_access_token(identity=control_estudio.correo, expires_delta=timedelta(hours=1), additional_claims={'rol': 'CE'})
-
+                access_token = create_access_token(identity=control_estudio.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CE', 'nombre': control_estudio.nombre})
+                
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
-                    accion=f"Inicio de sesión del Control: {usuario}",
-                    usuario=usuario,
+                    accion=f"Inicio de sesión del control con cédula: {control_estudio.cedula}",
+                    usuario=control_estudio.correo,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -178,6 +177,7 @@ def login():
             return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
 
 @control.route('/refresh')
 @jwt_required()
