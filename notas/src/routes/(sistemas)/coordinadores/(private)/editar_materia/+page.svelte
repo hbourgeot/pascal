@@ -124,7 +124,6 @@
   }
 
   $: tableMaterias = data.tableMaterias;
-  $: console.log(tableMaterias);
   $: sourceData = data.tableMaterias.slice(
     paginationSettings.offset * paginationSettings.limit,
     paginationSettings.offset * paginationSettings.limit +
@@ -237,10 +236,8 @@
         horaFin2 = new Date(0, 0, 0, dateHelper[0], dateHelper[1]);
       }
 
-      console.log(horaFin, horaInicio, horaFin2, horaInicio2);
     }
 
-    console.log(materia);
     prelacion = materia.prelacion;
     showExtraDays = materia.dia2 !== null && materia.dia2 !== "";
   };
