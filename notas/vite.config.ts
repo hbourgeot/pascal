@@ -8,4 +8,5 @@ export default defineConfig({
     minify: true,
     cssMinify: true,
   },
+  assetsInclude: ["**/*.pdf"],
 });
