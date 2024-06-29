@@ -1,6 +1,6 @@
 from flask import Blueprint, request, send_from_directory, jsonify
 from os import getcwd, path, remove, makedirs
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
@@ -19,7 +19,8 @@ def create_folder_if_not_exists(folder_path):
 @jwt_required()
 def upload_file():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         file = request.files['file']
         ciclo = request.form.get('ciclo', '')
         folder = request.form.get('folder', '')
@@ -50,7 +51,8 @@ def upload_file():
 @files.get("/file/<string:name_file>")
 @jwt_required()
 def get_file(name_file):
-    usuario = get_jwt_identity()  # Extraer identidad del token JWT
+    claims = get_jwt()
+    usuario = claims.get('nombre')
     folder = request.args.get("folder", "")
     ciclo = request.args.get("ciclo", "")
 
@@ -78,7 +80,8 @@ def get_file(name_file):
 @files.get("/download/<string:name_file>")
 @jwt_required()
 def download_file(name_file):
-    usuario = get_jwt_identity()  # Extraer identidad del token JWT
+    claims = get_jwt()
+    usuario = claims.get('nombre')
     folder = request.args.get("folder", "")
     ciclo = request.args.get("ciclo", "")
     file_path = path.join(PATH_FILES + ciclo, folder, name_file)
@@ -103,7 +106,8 @@ def download_file(name_file):
 @files.delete('/delete')
 @jwt_required()
 def delete_file():
-    usuario = get_jwt_identity()  # Extraer identidad del token JWT
+    claims = get_jwt()
+    usuario = claims.get('nombre')
     filename = request.json.get('filename', '')
     folder = request.json.get('folder', '')
     ciclo = request.json.get('ciclo', '')

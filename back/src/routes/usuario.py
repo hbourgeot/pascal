@@ -9,6 +9,7 @@ from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
 from models.entities.SuperUsuario import SuperUsuario
 from models.SuperUsuarioModel import SuperUsuarioModel
+
 user = Blueprint('user_blueprint', __name__)
 
 @user.after_request
@@ -107,37 +108,28 @@ def update_clave():
     try:
         claims = get_jwt()
         rol = claims.get('rol')
+        usuario = claims.get('nombre')
         if rol != 'S':
             return jsonify({"message": "No autorizado"}), 403
 
-        usuario = request.json['usuario']
-        clave = request.json['clave']
         nuevo = request.json['nuevo']
         nuevo = generate_password_hash(nuevo, "sha256")
-        user = SuperUsuario(usuario, None, None, clave)
-        hashed_clave = SuperUsuarioModel.login(user)
         
-        if hashed_clave:
-            if check_password_hash(hashed_clave, clave):
-                user = User("caja_pascal", nuevo)
-                affected_rows = UserModel.update_user(user)
-                if affected_rows == 1:
-                    # Registrar trazabilidad
-                    trazabilidad = Trazabilidad(
-                        accion=f"Actualizar clave del usuario: {usuario}",
-                        usuario=usuario,
-                        fecha=datetime.now(),
-                        modulo="Usuarios",
-                        nivel_alerta=2
-                    )
-                    TrazabilidadModel.add_trazabilidad(trazabilidad)
+        user = User("caja_pascal", nuevo)
+        affected_rows = UserModel.update_user(user)
+        if affected_rows == 1:
+            # Registrar trazabilidad
+            trazabilidad = Trazabilidad(
+                accion=f"Actualizar clave del usuario: {usuario}",
+                usuario=usuario,
+                fecha=datetime.now(),
+                modulo="Usuarios",
+                nivel_alerta=2
+            )
+            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-                    return jsonify({"successful": True})
-                else:
-                    return jsonify({"successful": False})
-            else:
-                return jsonify({"message": "clave incorrecta"})
+            return jsonify({"successful": True})
         else:
-            return jsonify({"message": "el usuario no existe"})
+            return jsonify({"successful": False})
     except Exception as ex:
         return jsonify({"message": str(ex)}), 500

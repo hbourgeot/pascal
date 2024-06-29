@@ -3,7 +3,7 @@ from models.entities.config import Configuracion
 from models.configmodel import ConfigModel
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime
 
 config = Blueprint('config_blueprint', __name__)
@@ -18,7 +18,8 @@ def after_request(response):
 @jwt_required()
 def get_configuraciones():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         configuraciones = ConfigModel.get_configuraciones()
 
         # Registrar trazabilidad
@@ -39,7 +40,8 @@ def get_configuraciones():
 @jwt_required()
 def get_configuracion(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         configuracion = ConfigModel.get_configuracion(id)
         
         if configuracion is not None:
@@ -63,7 +65,8 @@ def get_configuracion(id):
 @jwt_required()
 def add_configuracion():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         ciclo = request.json['ciclo']
         porc1 = request.json['porc1']
@@ -101,7 +104,8 @@ def add_configuracion():
 @jwt_required()
 def update_configuracion(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         ciclo = request.json['ciclo']
         porc1 = request.json['porc1']
@@ -139,7 +143,8 @@ def update_configuracion(id):
 @jwt_required()
 def delete_configuracion(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         config = Configuracion(str(id))
         affected_rows = ConfigModel.delete_configuracion(config)

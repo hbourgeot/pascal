@@ -3,7 +3,7 @@ from models.carreramodel import CarreraModel
 from models.entities.carreras import Carrera
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime
 
 carrera = Blueprint('carrera_blueprint', __name__)
@@ -18,7 +18,8 @@ def after_request(response):
 @jwt_required()
 def get_carreras():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         carreras = CarreraModel.get_carreras()
 
         # Registrar trazabilidad
@@ -39,7 +40,8 @@ def get_carreras():
 @jwt_required()
 def get_carrera(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         carrera = CarreraModel.get_carrera(id)
         
         if carrera is not None:
@@ -63,7 +65,8 @@ def get_carrera(id):
 @jwt_required()
 def add_carrera():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         id = request.json['id']
         nombre = request.json['nombre']
@@ -92,7 +95,8 @@ def add_carrera():
 @jwt_required()
 def update_carrera(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         nombre = request.json['nombre']
         carrera = Carrera(str(id), nombre)
@@ -119,7 +123,8 @@ def update_carrera(id):
 @jwt_required()
 def delete_carrera(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         carrera = Carrera(str(id))
         affected_rows = CarreraModel.delete_carrera(carrera)

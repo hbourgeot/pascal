@@ -2,7 +2,7 @@ import traceback
 from models.entities.peticiones import Peticiones
 from models.peticionesmodel import PeticionesModel
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
@@ -19,7 +19,8 @@ def after_request(response):
 @jwt_required()
 def get_peticiones():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         peticiones = PeticionesModel.get_peticiones()
 
         # Registrar trazabilidad
@@ -40,7 +41,8 @@ def get_peticiones():
 @jwt_required()
 def get_peticion(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         peticiones = PeticionesModel.get_peticion(id)
         
         if peticiones is not None:
@@ -64,7 +66,8 @@ def get_peticion(id):
 @jwt_required()
 def get_peticiones_pendientes():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         peticiones_pendientes = PeticionesModel.get_peticiones_pendientes()
 
         # Registrar trazabilidad
@@ -85,7 +88,8 @@ def get_peticiones_pendientes():
 @jwt_required()
 def add_peticion():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         id_docente = request.json['id_docente']
         descripcion = request.json['descripcion']
@@ -121,7 +125,8 @@ def add_peticion():
 @jwt_required()
 def update_peticion(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         data = request.json
 
         # Definimos una lista de campos permitidos para actualizar.
@@ -163,7 +168,8 @@ def update_peticion(id):
 @jwt_required()
 def delete_peticion(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         peticion = Peticiones(str(id))
         affected_rows = PeticionesModel.delete_peticion(peticion)

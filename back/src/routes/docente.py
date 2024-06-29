@@ -5,10 +5,9 @@ from models.materiamodel import MateriaModel
 from models.entities.materias import Materias
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta, datetime
-from models.entities.peticiones import Peticiones
 
 doc = Blueprint('docentes_blueprint', __name__)
 
@@ -22,7 +21,8 @@ def after_request(response):
 @jwt_required()
 def get_docentes():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         docentes = DocenteModel.get_docentes()
 
         # Registrar trazabilidad
@@ -43,7 +43,8 @@ def get_docentes():
 @jwt_required()
 def get_docente(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         docente = DocenteModel.get_docente(cedula)
         
         if docente != None:
@@ -67,7 +68,8 @@ def get_docente(cedula):
 @jwt_required()
 def get_peticiones_por_docente(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         peticiones = DocenteModel.get_peticiones_por_docente(cedula)
 
         # Registrar trazabilidad
@@ -88,7 +90,8 @@ def get_peticiones_por_docente(cedula):
 @jwt_required()
 def add_docente():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula = request.json['cedula']
         fullname = request.json['fullname']
@@ -120,7 +123,8 @@ def add_docente():
 @jwt_required()
 def update_docente(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         fullname = request.json['fullname']
         correo = request.json['correo']
@@ -151,7 +155,8 @@ def update_docente(cedula):
 @jwt_required()
 def delete_docente(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         docente = Docente(str(cedula))
         affected_rows = DocenteModel.delete_docente(docente)
@@ -177,7 +182,8 @@ def delete_docente(cedula):
 @jwt_required()
 def modificar_materia_estudiante():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula_estudiante = request.json.get('cedula_estudiante')
         nombre_campo = request.json.get('nombre_campo')

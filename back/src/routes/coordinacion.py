@@ -4,7 +4,7 @@ from models.studentsmodel import StudentModel, Student
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token
+from flask_jwt_extended import get_jwt_identity, get_jwt, jwt_required, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta, datetime
 
@@ -20,7 +20,8 @@ def after_request(response):
 @jwt_required()
 def get_coordinadores():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         coordinadores = CoordinacionModel.get_coordinadores()
 
         # Registrar trazabilidad
@@ -41,7 +42,8 @@ def get_coordinadores():
 @jwt_required()
 def get_coordinador(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         coordinador = CoordinacionModel.get_coordinador(cedula)
         
         if coordinador != None:
@@ -66,7 +68,8 @@ def get_coordinador(cedula):
 @jwt_required()
 def add_coordinador():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula = request.json['cedula']
         fullname = request.json['fullname']
@@ -98,7 +101,8 @@ def add_coordinador():
 @jwt_required()
 def update_coordinador(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         fullname = request.json['fullname']
         correo = request.json['correo']
@@ -129,7 +133,8 @@ def update_coordinador(cedula):
 @jwt_required()
 def delete_coordinador(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         coordinador = Coordinacion(str(cedula))
         affected_rows = CoordinacionModel.delete_coordinador(coordinador)
@@ -155,7 +160,8 @@ def delete_coordinador(cedula):
 @jwt_required()
 def get_nota(cedula: str):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         notas_obj = StudentModel.get_notas_estudiante(cedula)
         

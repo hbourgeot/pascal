@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from models.entities.SuperUsuario import SuperUsuario
 from models.SuperUsuarioModel import SuperUsuarioModel
 from flask import Blueprint, jsonify, request
@@ -19,7 +19,8 @@ def after_request(response):
 @jwt_required()
 def get_Super(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         superUs = SuperUsuarioModel.get_super_user(cedula)
         
         if superUs is not None:
@@ -44,7 +45,8 @@ def get_Super(cedula):
 @jwt_required()
 def add_Super():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula = request.json['cedula']
         nombre = request.json['nombre']
@@ -75,7 +77,8 @@ def add_Super():
 @jwt_required()
 def update_Super(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         nombre = request.json['nombre']
         correo = request.json['correo']
@@ -105,7 +108,8 @@ def update_Super(cedula):
 @jwt_required()
 def delete_Super(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         superUs = SuperUsuario(str(cedula))
         affected_rows = SuperUsuarioModel.delete_super_user(superUs)
@@ -161,7 +165,8 @@ def login_super_usuario():
 @jwt_required()
 def jwt_super():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         correo_super = usuario
         super_entity: SuperUsuario | None
         

@@ -2,7 +2,7 @@ from models.entities.materias import Materias
 from models.materiamodel import MateriaModel
 from models.configmodel import ConfigModel
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 import traceback
 from datetime import datetime
 from models.trazabilidadmodel import TrazabilidadModel
@@ -20,7 +20,8 @@ def after_request(response):
 @jwt_required()
 def get_materias():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         materias = MateriaModel.get_materias()
 
         # Registrar trazabilidad
@@ -42,7 +43,8 @@ def get_materias():
 @jwt_required()
 def get_materia(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         materias = MateriaModel.get_materia(id)
         
         if materias is not None:
@@ -67,7 +69,8 @@ def get_materia(id):
 @jwt_required()
 def get_materias_validas(cedula_estudiante: str):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         materias = MateriaModel.get_materias_validas(cedula_estudiante)
         
         if materias:
@@ -95,7 +98,8 @@ def get_materias_validas(cedula_estudiante: str):
 @jwt_required()
 def add_materia():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cod = request.json['id']
         nombre = request.json['nombre']
@@ -141,7 +145,8 @@ def add_materia():
 @jwt_required()
 def update_materia(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         nombre = request.json['nombre']
         prelacion = request.json['prelacion']
@@ -186,7 +191,8 @@ def update_materia(id):
 @jwt_required()
 def delete_materia(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         materia = Materias(str(id))
         affected_rows = MateriaModel.delete_materia(materia)

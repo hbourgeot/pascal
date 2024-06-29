@@ -4,7 +4,7 @@ from models.entities.students import Student
 from models.entities.pagos import Pago
 from models.studentsmodel import StudentModel
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from datetime import timedelta, datetime
 import traceback
 from models.trazabilidadmodel import TrazabilidadModel
@@ -22,7 +22,8 @@ def after_request(response):
 @jwt_required()
 def get_students():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         students = StudentModel.get_students()
 
         # Registrar trazabilidad
@@ -43,7 +44,8 @@ def get_students():
 @jwt_required()
 def get_student(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         student = StudentModel.get_student(cedula)
         
         if student is not None:
@@ -67,7 +69,8 @@ def get_student(cedula):
 @jwt_required()
 def add_student():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula = request.json['cedula']
         fullname = request.json['fullname']
@@ -106,7 +109,8 @@ def add_student():
 @jwt_required()
 def update_student(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         fullname = request.json['fullname']
         correo = request.json['correo']
@@ -143,7 +147,8 @@ def update_student(cedula):
 @jwt_required()
 def delete_student(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         student = Student(str(cedula))
         affected_rows = StudentModel.delete_student(student)
@@ -169,7 +174,8 @@ def delete_student(cedula):
 @jwt_required()
 def add_student_to_materia(materia: str):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         correo_estudiante = usuario
         student: Student | None
         if correo_estudiante is not None:
@@ -196,7 +202,8 @@ def add_student_to_materia(materia: str):
 @jwt_required()
 def get_notas():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         correo_estudiante = usuario
         student: Student | None
         if correo_estudiante is not None:
@@ -222,7 +229,8 @@ def get_notas():
 @jwt_required()
 def get_historico():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         correo_estudiante = usuario
         student: Student | None
         if correo_estudiante is not None:
@@ -249,7 +257,8 @@ def get_historico():
 @jwt_required()
 def get_horario():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         correo_estudiante = usuario
         student: Student | None
         if correo_estudiante is not None:
@@ -324,7 +333,8 @@ def login_estudiante():
 @jwt_required()
 def jwt_student():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         correo_estudiante = usuario
         student: Student | None
         if correo_estudiante is not None:

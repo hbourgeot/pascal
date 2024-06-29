@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, render_template, send_file
 from models.studentsmodel import StudentModel
 from models.carreramodel import CarreraModel
 from models.materiamodel import MateriaModel
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from datetime import date, datetime
 import pdfkit
 import io
@@ -25,7 +25,8 @@ BINPATH = os.getenv('BINPATH', 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf
 @jwt_required()
 def generar(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         student = StudentModel.get_student(cedula)
         if student is not None:
             notas = StudentModel.get_materias_inscritas(cedula)
@@ -59,7 +60,8 @@ def generar(cedula):
 @jwt_required()
 def docenteria():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         join = MateriaModel.get_docenteria()
         if join is not None:
             config = pdfkit.configuration(wkhtmltopdf=BINPATH)

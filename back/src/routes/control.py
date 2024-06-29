@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity, create_access_token
 from datetime import timedelta, datetime
 from models.entities.control import Control
 from models.controlmodel import ControlModel
@@ -19,7 +19,8 @@ def after_request(response):
 @jwt_required()
 def get_todo_control():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         control_es = ControlModel.get_todo_control()
 
         # Registrar trazabilidad
@@ -40,7 +41,8 @@ def get_todo_control():
 @jwt_required()
 def get_control(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         control_es = ControlModel.get_control(cedula)
         
         if control_es is not None:
@@ -64,7 +66,8 @@ def get_control(cedula):
 @jwt_required()
 def add_control():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula = request.json['cedula']
         fullname = request.json['fullname']
@@ -96,7 +99,8 @@ def add_control():
 @jwt_required()
 def update_coordinador(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         fullname = request.json['fullname']
         correo = request.json['correo']
@@ -127,7 +131,8 @@ def update_coordinador(cedula):
 @jwt_required()
 def delete_coordinador(cedula):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         control_es = Control(str(cedula))
         affected_rows = ControlModel.delete_control(control_es)

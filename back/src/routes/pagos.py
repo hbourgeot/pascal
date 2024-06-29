@@ -8,7 +8,7 @@ from models.entities.metodo import Metodo
 from models.transferenciamodel import TransferenciaModel
 from models.entities.transferencias import Transferencia
 from traceback import print_exc
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
@@ -25,7 +25,8 @@ def after_request(response):
 @jwt_required()
 def get_pagos():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         pagos = PagoModel.get_pagos()
 
         # Registrar trazabilidad
@@ -47,7 +48,8 @@ def get_pagos():
 @jwt_required()
 def get_pago(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
         pago = PagoModel.get_pago(id)
         
         if pago is not None:
@@ -71,7 +73,8 @@ def get_pago(id):
 @jwt_required()
 def add_pago():
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula_estudiante = request.json['cedula_estudiante']
         descripcion = request.json["descripcion"]
@@ -115,7 +118,8 @@ def add_pago():
 @jwt_required()
 def update_pago(id):
     try:
-        usuario = get_jwt_identity()  # Extraer identidad del token JWT
+        claims = get_jwt()
+        usuario = claims.get('nombre')
 
         cedula_estudiante = request.json['cedula_estudiante']
         metodo_pago_id = request.json['metodo_pago_id']
