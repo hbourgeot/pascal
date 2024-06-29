@@ -214,6 +214,8 @@ def login():
                 # Validar pagos de cuotas por fechas
                 for i in range(1, 6):
                     fecha_cuota = getattr(config, f'cuota{i}')
+                    # formatea fecha_cuota de datetime a string
+                    fecha_cuota = fecha_cuota.strftime("%Y-%m-%d")
                     if fecha_actual >= datetime.strptime(fecha_cuota, "%Y-%m-%d"):
                         pago_realizado = any(pago.monto_id.concepto == f'cuota{i}' and pago.ciclo == config.ciclo for pago in pagos)
                         if not pago_realizado:

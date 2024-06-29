@@ -216,6 +216,7 @@
           type="number"
           required
           placeholder="Monto"
+          step="0.01"
         />
       </div>
 
