@@ -290,3 +290,44 @@ class StudentModel():
 
         except Exception as ex:
             raise Exception(ex)
+    @classmethod
+    def update_password(cls, correo, new_password):
+        try:
+            connection = get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE estudiantes SET password=%s WHERE correo=%s", (new_password, correo))
+                affected_rows = cursor.rowcount
+                connection.commit()
+            connection.close()
+            return affected_rows
+        except Exception as ex:
+            raise Exception(ex)
+
+    @classmethod
+    def get_student_by_correo(cls, correo):
+        try:
+            connection = get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM estudiantes WHERE correo=%s", (correo,))
+                row = cursor.fetchone()
+                if row:
+                    student = Student(
+                        cedula=row[0],
+                        fullname=row[1],
+                        correo=row[2],
+                        telefono=row[3],
+                        semestre=row[4],
+                        password=row[5],
+                        estado=row[6],
+                        carrera=row[7],
+                        edad=row[8],
+                        sexo=row[9],
+                        direccion=row[10],
+                        fecha_nac=row[11]
+                    )
+                    return student
+                else:
+                    return None
+            connection.close()
+        except Exception as ex:
+            raise Exception(ex)

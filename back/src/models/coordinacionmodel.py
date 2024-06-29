@@ -155,3 +155,39 @@ class CoordinacionModel():
 
         except Exception as ex:
             raise Exception(ex)
+    
+    
+    @classmethod
+    def update_password(cls, correo, new_password):
+        try:
+            connection = get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE coordinacion SET password=%s WHERE correo=%s", (new_password, correo))
+                affected_rows = cursor.rowcount
+                connection.commit()
+            connection.close()
+            return affected_rows
+        except Exception as ex:
+            raise Exception(ex)
+
+    @classmethod
+    def get_coordinador_by_correo(cls, correo):
+        try:
+            connection = get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM coordinacion WHERE correo=%s", (correo,))
+                row = cursor.fetchone()
+                if row:
+                    coordinador = Coordinacion(
+                        cedula=row[0],
+                        fullname=row[1],
+                        correo=row[2],
+                        telefono=row[3],
+                        password=row[4]
+                    )
+                    return coordinador
+                else:
+                    return None
+            connection.close()
+        except Exception as ex:
+            raise Exception(ex)

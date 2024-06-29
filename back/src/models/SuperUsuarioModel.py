@@ -108,3 +108,36 @@ class SuperUsuarioModel():
             raise Exception(ex)
         
 
+    @classmethod
+    def update_password(cls, correo, new_password):
+        try:
+            connection = get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE super_usuarios SET password=%s WHERE correo=%s", (new_password, correo))
+                affected_rows = cursor.rowcount
+                connection.commit()
+            connection.close()
+            return affected_rows
+        except Exception as ex:
+            raise Exception(ex)
+
+    @classmethod
+    def get_super_usuario_by_correo(cls, correo):
+        try:
+            connection = get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM super_usuarios WHERE correo=%s", (correo,))
+                row = cursor.fetchone()
+                if row:
+                    super_usuario = SuperUsuario(
+                        cedula=row[0],
+                        nombre=row[1],
+                        correo=row[2],
+                        password=row[3]
+                    )
+                    return super_usuario
+                else:
+                    return None
+            connection.close()
+        except Exception as ex:
+            raise Exception(ex)

@@ -253,3 +253,37 @@ def obtener_promedio_ponderado(cedula_estudiante):
             return jsonify({"ok": False, "status": 404, "data": {"message": "No se encontraron notas para este estudiante"}}), 404
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+
+@coordinacion.route('/update-password', methods=["PUT"])
+@jwt_required()
+def update_password_coordinador():
+    try:
+        claims = get_jwt()
+        usuario = claims.get('sub')
+        nombre = claims.get('nombre')
+
+        current_password = request.json['current_password']
+        new_password = request.json['new_password']
+
+        coordinador = CoordinacionModel.get_coordinador_by_correo(usuario)
+        if coordinador and check_password_hash(coordinador.password, current_password):
+            affected_rows = CoordinacionModel.update_password(usuario, new_password)
+            if affected_rows == 1:
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Actualizar contraseña del coordinador: {nombre}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Coordinación",
+                    nivel_alerta=2
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                return jsonify({"ok": True, "status": 200, "data": "Contraseña actualizada exitosamente"})
+            else:
+                return jsonify({"ok": False, "status": 500, "data": "Error al actualizar la contraseña"}), 500
+        else:
+            return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

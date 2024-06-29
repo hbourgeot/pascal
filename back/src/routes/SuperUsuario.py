@@ -176,7 +176,7 @@ def jwt_super():
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Refrescar sesión del super usuario con cédula: {super_entity.cedula}",
-                    usuario=usuario,
+                    usuario=super_entity.nombre,
                     fecha=datetime.now(),
                     modulo="Autenticacion",
                     nivel_alerta=1
@@ -189,3 +189,37 @@ def jwt_super():
     except Exception as ex:
         print(ex)
         return jsonify({"message": str(ex)}), 500
+
+
+@superUs.route('/update-password', methods=["PUT"])
+@jwt_required()
+def update_password_super_usuario():
+    try:
+        claims = get_jwt()
+        usuario = claims.get('sub')
+        nombre = claims.get('nombre')
+
+        current_password = request.json['current_password']
+        new_password = request.json['new_password']
+
+        super_usuario = SuperUsuarioModel.get_super_usuario_by_correo(usuario)
+        if super_usuario and check_password_hash(super_usuario.password, current_password):
+            affected_rows = SuperUsuarioModel.update_password(usuario, new_password)
+            if affected_rows == 1:
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Actualizar contraseña del super usuario: {nombre}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="SuperUsuario",
+                    nivel_alerta=2
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                return jsonify({"ok": True, "status": 200, "data": "Contraseña actualizada exitosamente"})
+            else:
+                return jsonify({"ok": False, "status": 500, "data": "Error al actualizar la contraseña"}), 500
+        else:
+            return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

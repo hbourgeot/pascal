@@ -354,3 +354,54 @@ def jwt_student():
                 return jsonify({"ok": False, "status": 401, "data": {"message": "no autorizado"}}), 401
     except Exception as ex:
         return jsonify({"message": str(ex)}), 500
+
+
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt
+from datetime import datetime
+from werkzeug.security import check_password_hash
+from models.studentsmodel import StudentModel
+from models.trazabilidadmodel import TrazabilidadModel
+from models.entities.trazabilidad import Trazabilidad
+
+main = Blueprint('students_blueprint', __name__)
+
+@main.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@main.route('/update-password', methods=["PUT"])
+@jwt_required()
+def update_password_student():
+    try:
+        claims = get_jwt()
+        usuario = claims.get('sub')
+        nombre = claims.get('nombre')
+
+        current_password = request.json['current_password']
+        new_password = request.json['new_password']
+
+        student = StudentModel.get_student_by_correo(usuario)
+        if student and check_password_hash(student.password, current_password):
+            new_password = generate_password_hash(new_password, method="sha256")
+            affected_rows = StudentModel.update_password(usuario, new_password)
+            if affected_rows == 1:
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Actualizar contraseña del estudiante: {nombre}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Estudiantes",
+                    nivel_alerta=2
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                return jsonify({"ok": True, "status": 200, "data": "Contraseña actualizada exitosamente"})
+            else:
+                return jsonify({"ok": False, "status": 500, "data": "Error al actualizar la contraseña"}), 500
+        else:
+            return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

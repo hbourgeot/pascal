@@ -251,3 +251,36 @@ def jwt_docente():
             return jsonify({"ok": False, "status": 401, "data": {"message": "no autorizado"}}), 401
     except Exception as ex:
         return jsonify({"message": str(ex)}), 500
+
+@doc.route('/update-password', methods=["PATCH"])
+@jwt_required()
+def update_password():
+    try:
+        claims = get_jwt()
+        usuario = claims.get('sub')
+        nombre = claims.get('nombre')
+        
+        current_password = request.json['current_password']
+        new_password = request.json['new_password']
+
+        docente = DocenteModel.get_docente_by_correo(usuario)
+        if docente and check_password_hash(docente.password, current_password):
+            affected_rows = DocenteModel.update_password(usuario, new_password)
+            if affected_rows == 1:
+                # Registrar trazabilidad
+                trazabilidad = Trazabilidad(
+                    accion=f"Actualizar contraseña del docente: {nombre}",
+                    usuario=usuario,
+                    fecha=datetime.now(),
+                    modulo="Docentes",
+                    nivel_alerta=2
+                )
+                TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                return jsonify({"ok": True, "status": 200, "data": "Contraseña actualizada exitosamente"})
+            else:
+                return jsonify({"ok": False, "status": 500, "data": "Error al actualizar la contraseña"}), 500
+        else:
+            return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
+    except Exception as ex:
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
