@@ -14,10 +14,12 @@
   export let nombreCampo: string = "";
   export let idPeticion: string = "";
 
+  const corte = parseInt(nombreCampo.replace(/[a-zA-Z]/g, "")) % 2 === 0 ? "2do corte" : nombreCampo.replace(/[a-zA-Z]/g, "") + "er corte";
   // Form Data
   const formData = {
     cedula_estudiante: cedulaEstudiante,
-    nombre_campo: nombreCampo,
+    // split the string and the number, they are concatenated without spaces, like 'nota1'
+    nombre_campo: corte,
     valor: 0,
     materia: materia,
   };
@@ -27,7 +29,7 @@
     try {
       const payload = new FormData();
       payload.append("cedula_estudiante", formData.cedula_estudiante);
-      payload.append("nombre_campo", formData.nombre_campo);
+      payload.append("nombre_campo", nombreCampo);
       payload.append("valor", formData.valor.toString());
       payload.append("materia", formData.materia);
       payload.append("peticion", idPeticion.toString());
@@ -81,7 +83,7 @@
       <label class="label">
         <span>Nombre campo</span>
         <input
-          class="input p-2"
+          class="input p-2 capitalize"
           type="text"
           bind:value={formData.nombre_campo}
           readonly
