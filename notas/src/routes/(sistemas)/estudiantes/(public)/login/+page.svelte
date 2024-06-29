@@ -3,13 +3,12 @@
   import { Icon } from "@steeze-ui/svelte-icon";
   import Pascal from "$lib/images/pascalConFondo.png";
   import { enhance } from "$app/forms";
-  import { page } from "$app/stores";
   import { Toast, toastStore } from "@skeletonlabs/skeleton";
   import type { ToastSettings } from "@skeletonlabs/skeleton";
-  import type { ActionData } from "./$types";
+  import type { ActionData, PageData } from "./$types";
 
   export let form: ActionData;
-
+  export let data: PageData;
   let y: number;
 
   $: if (form?.message) {
@@ -19,7 +18,7 @@
 
     toastStore.trigger(t);
   }
-  let isExpirated = $page.url.searchParams.get("exp") ? true : false;
+  let isExpirated = data?.isExpirated;
 
   if (isExpirated) {
     const t: ToastSettings = {

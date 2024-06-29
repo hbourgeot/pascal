@@ -2,12 +2,13 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { logInStudent } from "$lib/server/auth";
 
-export const load = (async ({ locals: { estudiante } }) => {
+export const load = (async ({ locals: { estudiante }, url }) => {
   if (estudiante) {
     throw redirect(302, "/estudiantes");
   }
 
-  return {};
+  const isExpirated = url.searchParams.has("exp");
+  return {isExpirated};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
