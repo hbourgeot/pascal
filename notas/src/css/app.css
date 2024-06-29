@@ -1,0 +1,78 @@
+/* app global css */
+@import 'tailwindcss/base'; @import 'tailwindcss/components'; @import 'tailwindcss/utilities';
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root{
+  --primary: #db0081;
+  --secondary: #006FB0;
+  --labels: #969EAF;
+  /*'blue-button': #006FB0;*/
+  /* 'gray-texts': '#505050',
+
+  'redtrigger': '#FFDFDF',
+  'redbordertrigger': '#EA0000',
+  'gray-sky': '#EAECF0',
+  'blue-fondo': '#F2FDF1' */
+}
+
+
+@font-face {
+  font-family: HovesProTrial;
+  src: url("../assets/fonts/HovesProTrialRegular.ttf");
+}
+
+@font-face {
+  font-family: HovesProTrial;
+  src: url("../assets/fonts/HovesProTrialMedium.ttf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: HovesProTrial;
+  src: url("../assets/fonts/HovesProTrialDemiBold.ttf");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: HovesProTrial;
+  src: url("../assets/fonts/HovesProTrialBold.ttf");
+  font-weight: 800;
+}
+
+body {
+  font-family: 'HovesProTrial', serif;
+}
+
+.text-bold {
+  font-family: 'HovesProTrial', serif;
+  font-weight: 800;
+}
+
+button {
+  text-transform: capitalize !important;
+  font-weight: bold !important;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}

@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  flask:
+    build: ./src
+    container_name: flask
+    restart: always
+    ports:
+      - "5001:5000"
+    networks:
+      - nginxproxymanager_default
+  db:
+    image: postgres:14
+    ports:
+      - "32000:5432"
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRESL_USER=postgres
+      - POSTGRES_PASSWORD=Reyshell
+      - POSTGRES_DATABASE=universidad
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro
+    networks:
+      - nginxproxymanager_default
+
+networks:
+  nginxproxymanager_default:
+    external: true
