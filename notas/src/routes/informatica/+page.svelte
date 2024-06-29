@@ -11,7 +11,15 @@
     // Importar el PDF de manera dinámica
     const pdfModule = await import("./pensum.pdf");
     pdfUrl = pdfModule.default;
+    console.log(pdfUrl);
   });
 </script>
-
-<svelte:component this={PdfViewer} url={pdfUrl} data={null} />
+{#if pdfUrl}
+  {#if PdfViewer}
+    <svelte:component this={PdfViewer} url={pdfUrl} data={null} />
+  {/if}
+  {#if !PdfViewer}
+    <p>Cargando...</p>
+  {/if}
+  
+{/if}
