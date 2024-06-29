@@ -18,7 +18,6 @@ def get_materias():
     try:
 
         materias = MateriaModel.get_materias()
-        print(materias)
         return jsonify({"ok": True, "status":200,"data": materias})
             
     except Exception as ex:

@@ -26,13 +26,19 @@ export const load = (async ({
   const docentes: Docente[] = dataDocentes.docente;
 
   const materias = materiasData.filter(
-    (materia) =>
-      materia.id_carrera == params.carrera &&
+    (materia) => {
+      console.log(materia);
+      console.log(
+        materia.id_carrera == params.carrera &&
+          materia.semestre == parseInt(params.semestre) &&
+          materia.ciclo == config.ciclo
+      );
+      return materia.id_carrera == params.carrera &&
       materia.semestre == parseInt(params.semestre) &&
       materia.ciclo == config.ciclo
-  );
+  });
 
-  console.log(data);
+  console.log(materias);
 
   return {
     materias,

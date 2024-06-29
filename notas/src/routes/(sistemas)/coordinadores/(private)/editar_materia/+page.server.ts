@@ -46,6 +46,8 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
     data: { carreras },
   } = await client.GET("/api/carreras");
 
+  console.log(dataMat.materias.filter((materia: Materia) => materia.id !== null));
+
   return {
     docentes,
     materias,

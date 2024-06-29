@@ -23,8 +23,8 @@ class MateriaModel():
                 for row in result:
                     materias = Materias(id=row[0], nombre=row[1], prelacion=row[2], unidad_credito=row[3], hp=row[4],
                                         ht=row[5],
-                                        semestre=row[6], id_carrera=row[7], id_docente=row[8], dia=row[9],
-                                        hora_inicio=row[10], hora_fin=row[11], dia2=row[14], hora_inicio2=row[15], hora_fin2=row[16], ciclo=row[12], modalidad=row[13], maximo=row[17])
+                                        semestre=row[6], id_carrera=row[7], id_docente=row[17], dia=row[8],
+                                        hora_inicio=row[9], hora_fin=row[10], dia2=row[11], hora_inicio2=row[12], hora_fin2=row[13], ciclo=row[14], modalidad=row[15], maximo=row[16])
                     join["materias"].append(materias.to_JSON())
                     carrera = Carrera(id=row[18], nombre=row[19])
                     join["carreras"].append(carrera.to_JSON())
@@ -39,8 +39,7 @@ class MateriaModel():
     def get_materia(self, id: str):
         try:
             conection = get_connection()
-            join = {"ciclo": ConfigModel.get_configuracion("1").ciclo, "materia": {"id": "", "nombre": "",
-                                                                                   "estudiantes": [], "carrera": ""}}
+            join = {"ciclo": ConfigModel.get_configuracion("1").ciclo, "materia": {"id": "", "nombre": "", "estudiantes": [], "carrera": ""}}
             with conection.cursor() as cursor:
                 cursor.execute(
                     """

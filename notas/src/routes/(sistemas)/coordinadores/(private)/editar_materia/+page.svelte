@@ -1,26 +1,25 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import {
-    type ModalSettings,
-    modalStore,
-    type ModalComponent,
     Modal,
-    Table,
-    type TableSource,
-    tableMapperValues,
+    type ModalComponent,
+    type ModalSettings,
     Paginator,
     SlideToggle,
+    Table,
+    type TableSource,
+    modalStore,
+    tableMapperValues,
   } from "@skeletonlabs/skeleton";
 
-  import { TimePicker, Label } from "attractions";
-  import type { Docente, Materia } from "../../../../../app";
-  import type { ActionData, PageData, SubmitFunction } from "./$types";
   import ModalList from "$lib/components/ModalList.svelte";
   import { triggerToast } from "$lib/utils/toast";
   import { Icon } from "@steeze-ui/svelte-icon";
   import { ChevronDown } from "@steeze-ui/tabler-icons";
+  import { Label, TimePicker } from "attractions";
+  import type { Docente, Materia } from "../../../../../app";
+  import type { ActionData, PageData, SubmitFunction } from "./$types";
 
-  import Select from "svelte-select";
   import moment from "moment";
 
   export let data: PageData;
@@ -67,6 +66,8 @@
     offset: 0,
   };
 
+  let disabled = false;
+
   let showExtraDays = materia.dia2 !== null && materia.dia2 !== "";
 
   let days = [
@@ -91,10 +92,6 @@
       ["id", "nombre", "unidad_credito", "dia", "semestre", "prelacion"]
     ),
   };
-
-  $: listMaterias = data.list.filter(
-    (mat: Materia) => mat.semestre < materia.semestre
-  );
 
   const carreras = data.carreras ?? [];
   let modalComponentRegistry: Record<string, ModalComponent> = {
@@ -127,6 +124,7 @@
   }
 
   $: tableMaterias = data.tableMaterias;
+  $: console.log(tableMaterias);
   $: sourceData = data.tableMaterias.slice(
     paginationSettings.offset * paginationSettings.limit,
     paginationSettings.offset * paginationSettings.limit +
@@ -145,7 +143,6 @@
       ["id", "nombre", "unidad_credito", "dia", "semestre", "prelacion"]
     ),
   };
-  moment({});
 
   const handleAdd = async () => {
     try {
@@ -199,7 +196,10 @@
       );
     }
     return async ({ update }) => {
-      await update();
+      disabled = true;
+      window.location.reload();
+      await update({ reset: true });
+      //
     };
   };
 
@@ -211,7 +211,6 @@
         parseInt(materia.hora_inicio.split(":")[0]),
         parseInt(materia.hora_inicio.split(":")[1].split(" ")[0]),
       ];
-      console.log(dateHelper);
       if (materia.hora_inicio.includes("PM")) dateHelper[0] += 12;
       horaInicio = new Date(0, 0, 0, dateHelper[0], dateHelper[1]);
 
@@ -219,7 +218,6 @@
         parseInt(materia.hora_fin.split(":")[0]),
         parseInt(materia.hora_fin.split(":")[1].split(" ")[0]),
       ];
-      console.log(dateHelper);
       if (materia.hora_fin.includes("PM")) dateHelper[0] += 12;
       horaFin = new Date(0, 0, 0, dateHelper[0], dateHelper[1]);
 
@@ -228,7 +226,6 @@
           parseInt(materia.hora_inicio2.split(":")[0]),
           parseInt(materia.hora_inicio2.split(":")[1].split(" ")[0]),
         ];
-        console.log(dateHelper);
         if (materia.hora_inicio2.includes("PM")) dateHelper[0] += 12;
         horaInicio2 = new Date(0, 0, 0, dateHelper[0], dateHelper[1]);
 
@@ -236,33 +233,36 @@
           parseInt(materia.hora_fin2.split(":")[0]),
           parseInt(materia.hora_fin2.split(":")[1].split(" ")[0]),
         ];
-        console.log(dateHelper);
         if (materia.hora_fin2.includes("PM")) dateHelper[0] += 12;
         horaFin2 = new Date(0, 0, 0, dateHelper[0], dateHelper[1]);
       }
+
+      console.log(horaFin, horaInicio, horaFin2, horaInicio2);
     }
+
+    console.log(materia);
     prelacion = materia.prelacion;
     showExtraDays = materia.dia2 !== null && materia.dia2 !== "";
   };
 </script>
 
 <svelte:head>
-  <title>Editar materias | Coordinadorss | IUTEPAS</title>
+  <title>Editar materias | Coordinadores | IUTEPAS</title>
 </svelte:head>
-<section class="screen">
+<section class="min-h-screen">
   <div
-    class="container lg:w-4/5 md:w-5/6 mx-auto px-4 py-8 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
+    class="container lg:w-4/5 md:w-5/6 mx-auto px-4 py-6 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
   >
     <div class="p-8 rounded-xl shadow h-full w-1/2">
       <h2 class="text-2xl font-semibold mb-4 text-center">Editar materia</h2>
-      <form id="docente-form" method="post" use:enhance={handleSubmit}>
+      <form id="docente-form" method="post" use:enhance="{handleSubmit}">
         <div class="flex justify-between items-end gap-4">
           <div class="mb-4">
             <label for="id" class="label">Código de Materia</label>
             <input
               type="text"
               readonly
-              bind:value={materia.id}
+              bind:value="{materia.id}"
               id="id"
               name="id"
               class="input (text) py-2 px-7 outline-none"
@@ -274,10 +274,11 @@
             <input
               type="text"
               id="nombre"
-              bind:value={materia.nombre}
+              bind:value="{materia.nombre}"
               name="nombre"
               class="input (text) py-2 px-7 outline-none"
               required
+              {disabled}
             />
           </div>
           <div class="mb-4 w-1/3">
@@ -286,10 +287,11 @@
               type="number"
               id="maximo"
               name="maximo"
-              bind:value={materia.maximo}
+              bind:value="{materia.maximo}"
               class="input (number) py-2 px-7 outline-none"
               min="0"
               required
+              {disabled}
             />
           </div>
         </div>
@@ -300,17 +302,21 @@
               <select
                 id="credito"
                 name="unidad_credito"
-                bind:value={materia.unidad_credito}
+                bind:value="{materia.unidad_credito}"
                 class="select py-2 px-7 outline-none"
                 required
+                {disabled}
               >
-                <option value="1">1 U.C</option>
-                <option value="2">2 U.C</option>
-                <option value="3">3 U.C</option>
-                <option value="4">4 U.C</option>
+                <option value="{1}">1 U.C</option>
+                <option value="{2}">2 U.C</option>
+                <option value="{3}">3 U.C</option>
+                <option value="{4}">4 U.C</option>
               </select>
 
-              <Icon src={ChevronDown} class="absolute top-8 right-4 w-5 h-5" />
+              <Icon
+                src="{ChevronDown}"
+                class="absolute top-8 right-4 w-5 h-5"
+              />
             </label>
           </div>
           <div class="mb-4 w-1/3">
@@ -319,17 +325,21 @@
               <select
                 class="select py-2 px-7 outline-none"
                 id="hp"
-                bind:value={materia.hp}
+                bind:value="{materia.hp}"
                 name="hp"
                 required
+                {disabled}
               >
-                <option value="1">1h</option>
-                <option value="2">2h</option>
-                <option value="3">3h</option>
-                <option value="4">4h</option>
+                <option value="{1}">1h</option>
+                <option value="{2}">2h</option>
+                <option value="{3}">3h</option>
+                <option value="{4}">4h</option>
               </select>
 
-              <Icon src={ChevronDown} class="absolute top-8 right-4 w-5 h-5" />
+              <Icon
+                src="{ChevronDown}"
+                class="absolute top-8 right-4 w-5 h-5"
+              />
             </label>
           </div>
           <div class="mb-4 w-1/3">
@@ -337,18 +347,22 @@
               >Horas Teóricas
               <select
                 class="select py-2 px-7 outline-none"
-                bind:value={materia.ht}
+                bind:value="{materia.ht}"
                 id="ht"
                 name="ht"
                 required
+                {disabled}
               >
-                <option value="1">1h</option>
-                <option value="2">2h</option>
-                <option value="3">3h</option>
-                <option value="4">4h</option>
+                <option value="{1}">1h</option>
+                <option value="{2}">2h</option>
+                <option value="{3}">3h</option>
+                <option value="{4}">4h</option>
               </select>
 
-              <Icon src={ChevronDown} class="absolute top-8 right-4 w-5 h-5" />
+              <Icon
+                src="{ChevronDown}"
+                class="absolute top-8 right-4 w-5 h-5"
+              />
             </label>
           </div>
         </div>
@@ -360,18 +374,22 @@
                 name="semestre"
                 id="semestre"
                 class="select py-2 px-7 outline-none"
-                bind:value={materia.semestre}
+                bind:value="{materia.semestre}"
                 required
+                {disabled}
               >
-                <option value="1">1ro</option>
-                <option value="2">2do</option>
-                <option value="3">3ro</option>
-                <option value="4">4to</option>
-                <option value="5">5to</option>
-                <option value="6">6to</option>
+                <option value="{1}">1ro</option>
+                <option value="{2}">2do</option>
+                <option value="{3}">3ro</option>
+                <option value="{4}">4to</option>
+                <option value="{5}">5to</option>
+                <option value="{6}">6to</option>
               </select>
 
-              <Icon src={ChevronDown} class="absolute top-8 right-4 w-5 h-5" />
+              <Icon
+                src="{ChevronDown}"
+                class="absolute top-8 right-4 w-5 h-5"
+              />
             </label>
           </div>
           <div class="mb-4 w-1/3">
@@ -381,14 +399,18 @@
                 name="id_carrera"
                 id="carrera"
                 class="select py-2 px-7 outline-none"
-                bind:value={materia.id_carrera}
+                bind:value="{materia.id_carrera}"
+                {disabled}
               >
                 {#each carreras as carrera}
-                  <option value={carrera.id}>{carrera.nombre}</option>
+                  <option value="{carrera.id}">{carrera.nombre}</option>
                 {/each}
               </select>
 
-              <Icon src={ChevronDown} class="absolute top-8 right-4 w-5 h-5" />
+              <Icon
+                src="{ChevronDown}"
+                class="absolute top-8 right-4 w-5 h-5"
+              />
             </label>
           </div>
           <div class="mb-4 w-1/3">
@@ -398,7 +420,8 @@
               id="modalidad"
               class="select py-2 px-7"
               required
-              bind:value={materia.modalidad}
+              bind:value="{materia.modalidad}"
+              {disabled}
             >
               <option value="Presencial">Presencial</option>
               <option value="Virtual">Virtual</option>
@@ -413,22 +436,32 @@
                 name="id_docente"
                 id="docente"
                 class="select py-2 px-3 outline-none"
-                bind:value={materia.id_docente}
+                bind:value="{materia.id_docente}"
                 required
+                {disabled}
               >
                 {#each docentesSelect as docente}
-                  <option value={docente.cedula}>{docente.nombre}</option>
+                  <option value="{docente.cedula}">{docente.nombre}</option>
                 {/each}
               </select>
 
-              <Icon src={ChevronDown} class="absolute top-8 right-4 w-5 h-5" />
+              <Icon
+                src="{ChevronDown}"
+                class="absolute top-8 right-4 w-5 h-5"
+              />
             </label>
           </div>
           <div class="mb-4 w-1/2">
             <label for="dia" class="label">Primer Día de Clase</label>
-            <select name="dia" id="dia" class="select" bind:value={materia.dia}>
+            <select
+              name="dia"
+              id="dia"
+              class="select"
+              bind:value="{materia.dia}"
+              {disabled}
+            >
               {#each days as day}
-                <option value={day.value}>{day.label}</option>
+                <option value="{day.value}">{day.label}</option>
               {/each}
             </select>
           </div>
@@ -438,11 +471,12 @@
               <select
                 name="dia2"
                 id="dia2"
-                bind:value={materia.dia2}
+                bind:value="{materia.dia2}"
                 class="select"
+                {disabled}
               >
                 {#each days as day}
-                  <option value={day.value}>{day.label}</option>
+                  <option value="{day.value}">{day.label}</option>
                 {/each}
               </select>
             </div>
@@ -451,7 +485,7 @@
         <div class="flex justify-between items-center gap-x-5">
           <div class="mb-4 w-1/4">
             <label for="" class="label">Hora inicio</label>
-            <TimePicker format="%H:%M %P" bind:value={horaInicio}>
+            <TimePicker format="%H:%M %P" bind:value="{horaInicio}" {disabled}>
               <svelte:fragment slot="hours-label"
                 ><Label>Horas</Label></svelte:fragment
               >
@@ -465,7 +499,7 @@
           </div>
           <div class="mb-4 w-1/3">
             <label for="" class="label">Hora fin</label>
-            <TimePicker format="%H:%M %P" bind:value={horaFin}>
+            <TimePicker format="%H:%M %P" bind:value="{horaFin}" {disabled}>
               <svelte:fragment slot="hours-label"
                 ><Label>Horas</Label></svelte:fragment
               >
@@ -480,7 +514,11 @@
           {#if showExtraDays}
             <div class="mb-4 w-1/3">
               <label for="" class="label">Hora inicio Día 2</label>
-              <TimePicker format="%H:%M %P" bind:value={horaInicio2}>
+              <TimePicker
+                format="%H:%M %P"
+                bind:value="{horaInicio2}"
+                {disabled}
+              >
                 <svelte:fragment slot="hours-label"
                   ><Label>Horas</Label></svelte:fragment
                 >
@@ -494,7 +532,7 @@
             </div>
             <div class="mb-4 w-1/3">
               <label for="" class="label">Hora fin Dia 2</label>
-              <TimePicker format="%H:%M %P" bind:value={horaFin2}>
+              <TimePicker format="%H:%M %P" bind:value="{horaFin2}" {disabled}>
                 <svelte:fragment slot="hours-label"
                   ><Label>Horas</Label></svelte:fragment
                 >
@@ -513,8 +551,8 @@
         >
           <button
             type="button"
-            on:click={handleAdd}
-            disabled={materia.semestre <= 1}
+            on:click="{handleAdd}"
+            disabled="{materia.semestre <= 1}"
             class="bg-blue-600 text-white px-4 py-2 rounded-xl"
             >Seleccionar prelación</button
           >
@@ -523,7 +561,7 @@
               type="text"
               class="input (text) py-2 px-7 my-3"
               readonly
-              bind:value={prelacion}
+              bind:value="{prelacion}"
               name="prelacion"
               minlength="1"
             />
@@ -534,17 +572,18 @@
           </div>
         </div>
         <SlideToggle
-          bind:checked={showExtraDays}
+          bind:checked="{showExtraDays}"
           active="bg-primary-500"
           name=""
           class="my-3"
-          disabled={materia.id == ""}
+          disabled="{materia.id == ''}"
           size="lg"
           >{showExtraDays
             ? "Dos días a la semana"
             : "Un día a la semana"}</SlideToggle
         >
         <button
+          {disabled}
           type="submit"
           class="bg-blue-600 w-full text-white px-4 py-2 rounded-md"
           >Editar materia</button
@@ -557,13 +596,13 @@
         Materias registradas
       </h2>
       <Table
-        source={tableSource}
-        on:selected={handleClick}
-        interactive={true}
+        source="{tableSource}"
+        on:selected="{handleClick}"
+        interactive="{true}"
       />
       <Paginator
-        bind:settings={paginationSettings}
-        showFirstLastButtons={true}
+        bind:settings="{paginationSettings}"
+        showFirstLastButtons="{true}"
         amountText="registros"
         class="my-3"
         separatorText="de"
@@ -571,7 +610,7 @@
     </div>
   </div>
 </section>
-<Modal components={modalComponentRegistry} />
+<Modal components="{modalComponentRegistry}" />
 
 <style>
   :global(.bx--form-requirement) {

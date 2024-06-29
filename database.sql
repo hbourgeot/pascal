@@ -5,7 +5,7 @@
 -- Dumped from database version 14.12
 -- Dumped by pg_dump version 16.3
 
--- Started on 2024-06-28 20:19:29
+-- Started on 2024-06-28 21:18:46
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -256,12 +256,12 @@ CREATE TABLE public.materias (
     ht integer NOT NULL,
     semestre integer NOT NULL,
     id_carrera integer NOT NULL,
-    dia integer NOT NULL,
-    hora_inicio character varying(5) NOT NULL,
-    hora_fin character varying(5) NOT NULL,
-    dia2 integer,
-    hora_inicio2 character varying(5),
-    hora_fin2 character varying(5),
+    dia character varying(20) NOT NULL,
+    hora_inicio character varying(10) NOT NULL,
+    hora_fin character varying(10) NOT NULL,
+    dia2 character varying(20),
+    hora_inicio2 character varying(10),
+    hora_fin2 character varying(10),
     ciclo character varying(10) NOT NULL,
     modalidad character varying(20) NOT NULL,
     maximo integer NOT NULL,
@@ -708,6 +708,8 @@ ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usu
 -- Data for Name: billetes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.billetes (id, serial, monto, pago_id) FROM stdin;
+\.
 
 
 --
@@ -716,14 +718,16 @@ ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usu
 -- Data for Name: carreras; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.carreras VALUES (1, 'Informática');
-INSERT INTO public.carreras VALUES (2, 'Tecnología de alimentos');
-INSERT INTO public.carreras VALUES (3, 'Comunicación y electrónica');
-INSERT INTO public.carreras VALUES (4, 'Diseño gráfico');
-INSERT INTO public.carreras VALUES (5, 'Contabilidad y costos');
-INSERT INTO public.carreras VALUES (6, 'Administración bancaria y financiera');
-INSERT INTO public.carreras VALUES (7, 'Administración de empresas');
-INSERT INTO public.carreras VALUES (5839, 'programacion');
+COPY public.carreras (id, nombre) FROM stdin;
+1	Informática
+2	Tecnología de alimentos
+3	Comunicación y electrónica
+4	Diseño gráfico
+5	Contabilidad y costos
+6	Administración bancaria y financiera
+7	Administración de empresas
+5839	programacion
+\.
 
 
 --
@@ -732,7 +736,9 @@ INSERT INTO public.carreras VALUES (5839, 'programacion');
 -- Data for Name: configuracion; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.configuracion VALUES ('2024-1', 1, 25, 50, 25, '2024-06-10 00:00:00', '2024-07-08 00:00:00', '2024-07-01 00:00:00', '2024-07-15 00:00:00', '2024-07-29 00:00:00', '2024-08-12 00:00:00', '2024-08-26 00:00:00');
+COPY public.configuracion (ciclo, id, porc1, porc2, porc3, horario_inicio, horario_fin, cuota1, cuota2, cuota3, cuota4, cuota5) FROM stdin;
+2024-1	1	25	50	25	2024-06-10 00:00:00	2024-07-08 00:00:00	2024-07-01 00:00:00	2024-07-15 00:00:00	2024-07-29 00:00:00	2024-08-12 00:00:00	2024-08-26 00:00:00
+\.
 
 
 --
@@ -741,7 +747,9 @@ INSERT INTO public.configuracion VALUES ('2024-1', 1, 25, 50, 25, '2024-06-10 00
 -- Data for Name: control; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.control VALUES ('V-9435339', 'Hilda Silvaa', 'hilda@gmail.com', '0414-4571302', 'sha256$wKp3VpaivmopiGLY$ab1126c1256381620abc0db9d2b860197064cf401a874e7f0240e71da835f27c');
+COPY public.control (cedula, fullname, correo, telefono, password) FROM stdin;
+V-9435339	Hilda Silvaa	hilda@gmail.com	0414-4571302	sha256$wKp3VpaivmopiGLY$ab1126c1256381620abc0db9d2b860197064cf401a874e7f0240e71da835f27c
+\.
 
 
 --
@@ -750,7 +758,9 @@ INSERT INTO public.control VALUES ('V-9435339', 'Hilda Silvaa', 'hilda@gmail.com
 -- Data for Name: coordinacion; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.coordinacion VALUES ('V-3230111', 'Julieta Silva', 'julieta@gmail.com', '0424-3826983', 'sha256$dkPxwAZbs5GAOyBe$9abac64c3fd9d0dbadf31d27859560f95bf2575ebd071c320e998f63324aef49');
+COPY public.coordinacion (cedula, fullname, correo, telefono, password) FROM stdin;
+V-3230111	Julieta Silva	julieta@gmail.com	0424-3826983	sha256$dkPxwAZbs5GAOyBe$9abac64c3fd9d0dbadf31d27859560f95bf2575ebd071c320e998f63324aef49
+\.
 
 
 --
@@ -759,7 +769,9 @@ INSERT INTO public.coordinacion VALUES ('V-3230111', 'Julieta Silva', 'julieta@g
 -- Data for Name: docentes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.docentes VALUES ('V-30211773', 'Maria Perez', 'maria@gmail.com', '0414-1234567', 'sha256$GvrVzWz0A71Pw6dn$f17589ffdeaa5ca9f4af7e1f245ac86d6a3da0db4011d76515016c01c3c7f298');
+COPY public.docentes (cedula, fullname, correo, telefono, password) FROM stdin;
+V-30211773	Maria Perez	maria@gmail.com	0414-1234567	sha256$GvrVzWz0A71Pw6dn$f17589ffdeaa5ca9f4af7e1f245ac86d6a3da0db4011d76515016c01c3c7f298
+\.
 
 
 --
@@ -768,10 +780,12 @@ INSERT INTO public.docentes VALUES ('V-30211773', 'Maria Perez', 'maria@gmail.co
 -- Data for Name: estudiantes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.estudiantes VALUES ('V-30555724', 'Henrry francisco bourgeot silva', 'henrrybrgt@gmail.com', '0414-4571302', 1, 'nuevo ingreso', 'sha256$UlRUL7aj4g5R8MH5$0d6e1eb8907f668b70c30a691dc5d279560c6596358a918a52cb1f5c732816b0', 1, 20, 'M', 0, 'la morita', '2003-01-16 00:00:00');
-INSERT INTO public.estudiantes VALUES ('V-30406663', 'sharon andreina gamboa tanco', 'sharongamboa01@hotmail.com', '0414-436311', 1, 'regular', 'sha256$HADyuYkM1jgjSCfT$e20537aa8ada4bddead8ce5cb237a27dfafe3207cddfe12b43cabdc9d1b090a3', 2, 22, 'F', 0, 'turmero', '2022-05-08 00:00:00');
-INSERT INTO public.estudiantes VALUES ('V-30452818', 'Francisco gabriel silva persaq', 'franciscosilva01@gmail.com', '0414--1', 2, 'regular', 'sha256$4k0SY19o0WVrBe7l$593e08fbf08b02e0c4aef84ad804a9da7ce117ae679fa1bdcbbcb8b42130339d', 3, 21, 'M', 0, 'san carlos', '2002-09-07 00:00:00');
-INSERT INTO public.estudiantes VALUES ('V-29890437', 'elibeth leonela curalli jaimes', 'elibethleonela@gmail.com', '0424-3501574', 1, 'nuevo ingreso', 'sha256$0oU4lMVccheQgsnF$708b82265752f519d482c08f6ed1eb8ec8acae91a09b52d5de64c4bcbe889003', 3, 21, 'F', 0, 'santa cruz', '2002-06-18 00:00:00');
+COPY public.estudiantes (cedula, fullname, correo, telefono, semestre, estado, password, carrera, edad, sexo, promedio, direccion, fecha_nac) FROM stdin;
+V-30555724	Henrry francisco bourgeot silva	henrrybrgt@gmail.com	0414-4571302	1	nuevo ingreso	sha256$UlRUL7aj4g5R8MH5$0d6e1eb8907f668b70c30a691dc5d279560c6596358a918a52cb1f5c732816b0	1	20	M	0	la morita	2003-01-16 00:00:00
+V-30406663	sharon andreina gamboa tanco	sharongamboa01@hotmail.com	0414-436311	1	regular	sha256$HADyuYkM1jgjSCfT$e20537aa8ada4bddead8ce5cb237a27dfafe3207cddfe12b43cabdc9d1b090a3	2	22	F	0	turmero	2022-05-08 00:00:00
+V-30452818	Francisco gabriel silva persaq	franciscosilva01@gmail.com	0414--1	2	regular	sha256$4k0SY19o0WVrBe7l$593e08fbf08b02e0c4aef84ad804a9da7ce117ae679fa1bdcbbcb8b42130339d	3	21	M	0	san carlos	2002-09-07 00:00:00
+V-29890437	elibeth leonela curalli jaimes	elibethleonela@gmail.com	0424-3501574	1	nuevo ingreso	sha256$0oU4lMVccheQgsnF$708b82265752f519d482c08f6ed1eb8ec8acae91a09b52d5de64c4bcbe889003	3	21	F	0	santa cruz	2002-06-18 00:00:00
+\.
 
 
 --
@@ -780,7 +794,9 @@ INSERT INTO public.estudiantes VALUES ('V-29890437', 'elibeth leonela curalli ja
 -- Data for Name: factura; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.factura VALUES (1);
+COPY public.factura (id) FROM stdin;
+1
+\.
 
 
 --
@@ -789,6 +805,9 @@ INSERT INTO public.factura VALUES (1);
 -- Data for Name: materias; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.materias (id, nombre, prelacion, unidad_credito, hp, ht, semestre, id_carrera, dia, hora_inicio, hora_fin, dia2, hora_inicio2, hora_fin2, ciclo, modalidad, maximo, id_docente) FROM stdin;
+9474084	MATEMÁTICA		1	2	3	1	4	martes	07:00 AM	08:20 AM	jueves	07:00 AM	10:00 AM	2024-1	Virtual	24	V-30211773
+\.
 
 
 --
@@ -797,6 +816,8 @@ INSERT INTO public.factura VALUES (1);
 -- Data for Name: materias_estudiantes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.materias_estudiantes (id, cod_materia, cedula_estudiante, nota1, nota2, nota3, promedio, uc, ciclo) FROM stdin;
+\.
 
 
 --
@@ -805,24 +826,26 @@ INSERT INTO public.factura VALUES (1);
 -- Data for Name: metodo_pago; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.metodo_pago VALUES (1, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (2, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (3, 'Efectivo', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (4, 'Efectivo', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (5, 'Punto', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (6, 'Punto', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (7, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (8, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (9, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (10, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (11, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (12, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (13, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (14, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (15, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (16, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (17, 'Transferencia', 'pre_inscripcion');
-INSERT INTO public.metodo_pago VALUES (18, 'Transferencia', 'pre_inscripcion');
+COPY public.metodo_pago (id, nombre, descripcion) FROM stdin;
+1	Transferencia	pre_inscripcion
+2	Transferencia	pre_inscripcion
+3	Efectivo	pre_inscripcion
+4	Efectivo	pre_inscripcion
+5	Punto	pre_inscripcion
+6	Punto	pre_inscripcion
+7	Transferencia	pre_inscripcion
+8	Transferencia	pre_inscripcion
+9	Transferencia	pre_inscripcion
+10	Transferencia	pre_inscripcion
+11	Transferencia	pre_inscripcion
+12	Transferencia	pre_inscripcion
+13	Transferencia	pre_inscripcion
+14	Transferencia	pre_inscripcion
+15	Transferencia	pre_inscripcion
+16	Transferencia	pre_inscripcion
+17	Transferencia	pre_inscripcion
+18	Transferencia	pre_inscripcion
+\.
 
 
 --
@@ -831,24 +854,26 @@ INSERT INTO public.metodo_pago VALUES (18, 'Transferencia', 'pre_inscripcion');
 -- Data for Name: montos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.montos VALUES (1, 'pre_inscripcion', 1265);
-INSERT INTO public.montos VALUES (2, 'pre_inscripcion', 1265);
-INSERT INTO public.montos VALUES (3, 'pre_inscripcion', 1265);
-INSERT INTO public.montos VALUES (4, 'pre_inscripcion', 1265);
-INSERT INTO public.montos VALUES (5, 'pre_inscripcion', 1265);
-INSERT INTO public.montos VALUES (6, 'pre_inscripcion', 1265);
-INSERT INTO public.montos VALUES (7, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (8, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (9, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (10, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (11, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (12, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (13, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (14, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (15, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (16, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (17, 'pre_inscripcion', 3482);
-INSERT INTO public.montos VALUES (18, 'pre_inscripcion', 3482);
+COPY public.montos (id, concepto, monto) FROM stdin;
+1	pre_inscripcion	1265
+2	pre_inscripcion	1265
+3	pre_inscripcion	1265
+4	pre_inscripcion	1265
+5	pre_inscripcion	1265
+6	pre_inscripcion	1265
+7	pre_inscripcion	3482
+8	pre_inscripcion	3482
+9	pre_inscripcion	3482
+10	pre_inscripcion	3482
+11	pre_inscripcion	3482
+12	pre_inscripcion	3482
+13	pre_inscripcion	3482
+14	pre_inscripcion	3482
+15	pre_inscripcion	3482
+16	pre_inscripcion	3482
+17	pre_inscripcion	3482
+18	pre_inscripcion	3482
+\.
 
 
 --
@@ -857,7 +882,9 @@ INSERT INTO public.montos VALUES (18, 'pre_inscripcion', 3482);
 -- Data for Name: pagos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.pagos VALUES (1, 'V-29890437', 18, 18, '2024-06-13 00:00:00', 10, '2024-1');
+COPY public.pagos (id, cedula_estudiante, metodo_pago_id, monto_id, fecha_pago, referencia_transferencias, ciclo) FROM stdin;
+1	V-29890437	18	18	2024-06-13 00:00:00	10	2024-1
+\.
 
 
 --
@@ -866,6 +893,8 @@ INSERT INTO public.pagos VALUES (1, 'V-29890437', 18, 18, '2024-06-13 00:00:00',
 -- Data for Name: peticiones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.peticiones (id, id_docente, descripcion, estado, id_estudiante, id_materia, campo) FROM stdin;
+\.
 
 
 --
@@ -874,7 +903,9 @@ INSERT INTO public.pagos VALUES (1, 'V-29890437', 18, 18, '2024-06-13 00:00:00',
 -- Data for Name: superusuario; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.superusuario VALUES ('V-8599738', 'Henrry Francisco', 'hfbourgeotjr@gmail.com', 'sha256$fyqyxG8kOtRAQxRp$55e88b893316aec7b568e2732e4aaac8398e763b90612a0c38a99279eb60d0ae');
+COPY public.superusuario (cedula, fullname, correo, password) FROM stdin;
+V-8599738	Henrry Francisco	hfbourgeotjr@gmail.com	sha256$fyqyxG8kOtRAQxRp$55e88b893316aec7b568e2732e4aaac8398e763b90612a0c38a99279eb60d0ae
+\.
 
 
 --
@@ -883,16 +914,18 @@ INSERT INTO public.superusuario VALUES ('V-8599738', 'Henrry Francisco', 'hfbour
 -- Data for Name: transferencias; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.transferencias VALUES (1, '58392');
-INSERT INTO public.transferencias VALUES (2, '58392');
-INSERT INTO public.transferencias VALUES (3, '58392');
-INSERT INTO public.transferencias VALUES (4, '58392');
-INSERT INTO public.transferencias VALUES (5, '58392');
-INSERT INTO public.transferencias VALUES (6, '58392');
-INSERT INTO public.transferencias VALUES (7, '58392');
-INSERT INTO public.transferencias VALUES (8, '58392');
-INSERT INTO public.transferencias VALUES (9, '58392');
-INSERT INTO public.transferencias VALUES (10, '58392');
+COPY public.transferencias (id, codigo_referencia) FROM stdin;
+1	58392
+2	58392
+3	58392
+4	58392
+5	58392
+6	58392
+7	58392
+8	58392
+9	58392
+10	58392
+\.
 
 
 --
@@ -901,6 +934,8 @@ INSERT INTO public.transferencias VALUES (10, '58392');
 -- Data for Name: trazabilidad; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+COPY public.trazabilidad (id, accion, usuario, fecha, modulo, nivel_alerta) FROM stdin;
+\.
 
 
 --
@@ -909,7 +944,9 @@ INSERT INTO public.transferencias VALUES (10, '58392');
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.usuarios VALUES (1, 'caja_pascal', 'Caja', 'sha256$m2ba9umlkOm921VQ$c1e2b387efebdd71927e768131f7b07f8bad0243e4c63a688ee4a3412d8e1412');
+COPY public.usuarios (id, usuario, nombre, clave) FROM stdin;
+1	caja_pascal	Caja	sha256$m2ba9umlkOm921VQ$c1e2b387efebdd71927e768131f7b07f8bad0243e4c63a688ee4a3412d8e1412
+\.
 
 
 --
@@ -1291,7 +1328,7 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2024-06-28 20:19:29
+-- Completed on 2024-06-28 21:18:46
 
 --
 -- PostgreSQL database dump complete
