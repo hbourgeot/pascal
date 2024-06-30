@@ -1,6 +1,6 @@
-import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { systemLogger } from "$lib/server/logger";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load: PageServerLoad = async ({
   locals: { client, coordinador },
@@ -28,4 +28,8 @@ export const load: PageServerLoad = async ({
         )
     );
   return { estudiantes: estudiantes, carreras };
+};
+
+export const actions: Actions = {
+  ...passwordAction,
 };

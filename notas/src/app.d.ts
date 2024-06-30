@@ -13,6 +13,7 @@ declare global {
       controlEstudio: ControlEstudio;
       config: Config;
       superUsuario: SuperUsuario;
+      token
     }
   }
 }

@@ -26,6 +26,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
   if (!event.url.pathname.includes("/logout")) {
     const accessToken = getAccessToken(event);
     const verifyToken = accessToken?.split(" ")[1] ?? "";
+    event.locals.token = accessToken;
 
     if (accessToken) {
       try {
@@ -114,15 +115,15 @@ const authHandler: Handle = async ({ event, resolve }) => {
 const clientHandler: Handle = async ({ event, resolve }) => {
   event.locals.client = {
     GET: async (endpoint: string, body?: object, headers?: any) =>
-      await client(endpoint, "GET", body, headers),
+      await client(event, endpoint, "GET", body, headers),
     POST: async (endpoint: string, body?: object, headers?: any) =>
-      await client(endpoint, "POST", body, headers),
+      await client(event, endpoint, "POST", body, headers),
     PUT: async (endpoint: string, body?: object, headers?: any) =>
-      await client(endpoint, "PUT", body, headers),
+      await client(event, endpoint, "PUT", body, headers),
     PATCH: async (endpoint: string, body?: object, headers?: any) =>
-      await client(endpoint, "PATCH", body, headers),
+      await client(event, endpoint, "PATCH", body, headers),
     DELETE: async (endpoint: string, body?: object, headers?: any) =>
-      await client(endpoint, "DELETE", body, headers),
+      await client(event, endpoint, "DELETE", body, headers),
   };
 
   return await resolve(event);

@@ -1,3 +1,4 @@
+import { passwordAction } from "$lib/server/changePassword";
 import { systemLogger } from "$lib/server/logger";
 import type { Peticiones } from "../../../../../app";
 import type { Actions, PageServerLoad } from "./$types";
@@ -52,4 +53,6 @@ export const actions: Actions = {
       payload
     );
   },
+
+  ...passwordAction,
 };

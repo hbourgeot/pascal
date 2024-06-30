@@ -1,4 +1,5 @@
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 import { promises as fs } from "node:fs";
 export const load = (async () => {
   interface Log {
@@ -15,3 +16,7 @@ export const load = (async () => {
     );
   return { logs };
 }) satisfies PageServerLoad;
+
+export const actions: Actions = {
+  ...passwordAction
+}

@@ -356,23 +356,7 @@ def jwt_student():
         return jsonify({"message": str(ex)}), 500
 
 
-from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt
-from datetime import datetime
-from werkzeug.security import check_password_hash
-from models.studentsmodel import StudentModel
-from models.trazabilidadmodel import TrazabilidadModel
-from models.entities.trazabilidad import Trazabilidad
-
-main = Blueprint('students_blueprint', __name__)
-
-@main.after_request
-def after_request(response):
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
-    return response
-
-@main.route('/update-password', methods=["PUT"])
+@main.route('/update-password', methods=["PATCH"])
 @jwt_required()
 def update_password_student():
     try:
@@ -391,7 +375,7 @@ def update_password_student():
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Actualizar contraseña del estudiante: {nombre}",
-                    usuario=usuario,
+                    usuario=nombre,
                     fecha=datetime.now(),
                     modulo="Estudiantes",
                     nivel_alerta=2

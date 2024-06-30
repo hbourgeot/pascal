@@ -1,5 +1,6 @@
 import { systemLogger } from "$lib/server/logger";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load: PageServerLoad = async ({
   locals: { client, coordinador },
@@ -33,3 +34,8 @@ export const load: PageServerLoad = async ({
     query: url.searchParams.get("s"),
   };
 };
+
+
+export const actions: Actions = {
+  ...passwordAction
+}

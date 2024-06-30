@@ -9,4 +9,7 @@ export default defineConfig({
     cssMinify: true,
   },
   assetsInclude: ["**/*.pdf"],
+  server: {
+    port: 5173,
+  },
 });

@@ -2,6 +2,7 @@ import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Docente, Materia } from "../../../../../app";
 import { systemLogger } from "$lib/server/logger";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load: PageServerLoad = async ({
   locals: { client, coordinador },
@@ -76,4 +77,6 @@ export const actions: Actions = {
 
     return { message: "Materia registrada!" };
   },
+
+  ...passwordAction,
 };

@@ -1,5 +1,6 @@
 import { systemLogger } from "$lib/server/logger";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ locals: { client, coordinador, config } }) => {
   systemLogger.info(`${coordinador.nombre} ha entrado a ver las materias`);
@@ -18,3 +19,7 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
 
   return { carreras };
 }) satisfies PageServerLoad;
+
+export const actions: Actions = {
+  ...passwordAction
+}

@@ -1,6 +1,7 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { systemLogger } from "$lib/server/logger";
+import { passwordAction } from "$lib/server/changePassword";
 
 let ciclo = "";
 export const load = (async ({ params, locals: { client, docente } }) => {
@@ -95,4 +96,6 @@ export const actions: Actions = {
 
     return { message: "Petición realizada" };
   },
+
+  ...passwordAction,
 };

@@ -7,6 +7,10 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, get_jwt, jwt_required, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta, datetime
+from logging import Logger
+
+logger = Logger(__name__, 1)
+
 
 coordinacion = Blueprint('coordinacion_blueprint', __name__)
 
@@ -255,7 +259,7 @@ def obtener_promedio_ponderado(cedula_estudiante):
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 
-@coordinacion.route('/update-password', methods=["PUT"])
+@coordinacion.route('/update-password', methods=["PATCH"])
 @jwt_required()
 def update_password_coordinador():
     try:
@@ -265,9 +269,12 @@ def update_password_coordinador():
 
         current_password = request.json['current_password']
         new_password = request.json['new_password']
+        logger.info(current_password, new_password)
 
         coordinador = CoordinacionModel.get_coordinador_by_correo(usuario)
+    
         if coordinador and check_password_hash(coordinador.password, current_password):
+            new_password = generate_password_hash(new_password, method="sha256")
             affected_rows = CoordinacionModel.update_password(usuario, new_password)
             if affected_rows == 1:
                 # Registrar trazabilidad
@@ -284,6 +291,8 @@ def update_password_coordinador():
             else:
                 return jsonify({"ok": False, "status": 500, "data": "Error al actualizar la contraseña"}), 500
         else:
+            logger.info(coordinador.password, current_password, check_password_hash(coordinador.password, current_password))
+            
             return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

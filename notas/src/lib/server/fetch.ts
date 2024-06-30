@@ -1,6 +1,9 @@
 import { baseURL } from "$env/static/private";
+import type { RequestEvent } from "@sveltejs/kit";
+import { getAccessToken } from "./auth";
 
 export const client = async (
+  event: RequestEvent,
   endpoint: string,
   method: string,
   raw?: object,
@@ -9,8 +12,6 @@ export const client = async (
   let body;
 
   if (raw instanceof FormData) {
-    // No need to set 'Content-Type': 'multipart/form-data' header,
-    // it's automatically set by the browser along with the correct 'boundary'
     body = raw;
   } else {
     body = raw ? JSON.stringify(raw) : null;
@@ -20,6 +21,16 @@ export const client = async (
     };
   }
 
+  const token = event.locals.token ?? getAccessToken(event);
+  console.log("token", token, event.locals.token, getAccessToken(event));
+
+  if (token) {
+    headers["Authorization"] = token;
+  }
+
+  console.log("headers", headers);
+  console.log(token, "token");
+
   let res: any;
   try {
     res = await fetch(baseURL + endpoint, { method, body, headers });
@@ -27,7 +38,6 @@ export const client = async (
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return await res.json();
     } else {
-      // Assuming 'blob' for file data
       const file = await res.blob();
       return file;
     }

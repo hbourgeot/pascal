@@ -39,6 +39,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@floating-ui/dom": "^1.6.7",
     "@steeze-ui/svelte-icon": "^1.5.0",
     "jsonwebtoken": "^9.0.0",
     "jspdf": "^2.5.1",

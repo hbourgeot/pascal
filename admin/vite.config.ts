@@ -7,4 +7,8 @@ export default defineConfig({
     sourcemap: true,
   },
   assetsInclude: ["**/*.pdf"],
+  // change port to 5174
+  server: {
+    port: 5174,
+  },
 });

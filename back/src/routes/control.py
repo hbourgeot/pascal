@@ -217,7 +217,7 @@ def after_request(response):
     header['Access-Control-Allow-Origin'] = '*'
     return response
 
-@control.route('/update-password', methods=["PUT"])
+@control.route('/update-password', methods=["PATCH"])
 @jwt_required()
 def update_password_control():
     try:
@@ -230,12 +230,13 @@ def update_password_control():
 
         control_user = ControlModel.get_control_by_correo(usuario)
         if control_user and check_password_hash(control_user.password, current_password):
+            new_password = generate_password_hash(new_password, method="sha256")
             affected_rows = ControlModel.update_password(usuario, new_password)
             if affected_rows == 1:
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
                     accion=f"Actualizar contraseña del usuario de control: {nombre}",
-                    usuario=usuario,
+                    usuario=nombre,
                     fecha=datetime.now(),
                     modulo="Control",
                     nivel_alerta=2

@@ -1,5 +1,6 @@
 import { systemLogger } from "$lib/server/logger";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ locals: { client, docente } }) => {
   const { ok, status, data } = await client.GET(
@@ -12,3 +13,7 @@ export const load = (async ({ locals: { client, docente } }) => {
   );
   return { docente: data.docente, materias: data.materias };
 }) satisfies PageServerLoad;
+
+export const actions: Actions = {
+  ...passwordAction
+}

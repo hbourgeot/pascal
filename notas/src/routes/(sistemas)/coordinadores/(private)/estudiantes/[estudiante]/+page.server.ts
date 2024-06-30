@@ -1,4 +1,6 @@
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
+
 import type { Estudiante, Notas } from "../../../../../../app";
 import { systemLogger } from "$lib/server/logger";
 
@@ -25,3 +27,7 @@ export const load: PageServerLoad = async ({
 
   return { estudiante, notas };
 };
+
+export const actions: Actions = {
+  ...passwordAction
+}

@@ -2,13 +2,14 @@ import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { systemLogger } from "$lib/server/logger";
 import moment from "moment";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ locals: { client, coordinador } }) => {
   systemLogger.info(
     `${coordinador.nombre} está viendo las configuraciones del sistema`
   );
   const { ok, data } = await client.GET("/api/config/1");
-  console.log(ok, data)
+  console.log(ok, data);
 
   if (!ok) return {};
 
@@ -22,7 +23,8 @@ export const load = (async ({ locals: { client, coordinador } }) => {
       cuota5: moment(data.cuota5).format("YYYY-MM-DD"),
       horario_inicio: moment(data.horario_inicio).format("YYYY-MM-DD"),
       horario_fin: moment(data.horario_fin).format("YYYY-MM-DD"),
-  } };
+    },
+  };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -38,4 +40,6 @@ export const actions: Actions = {
 
     return { message: "Configuración cambiada!", ok: true };
   },
+
+  ...passwordAction,
 };

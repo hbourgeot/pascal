@@ -1,6 +1,7 @@
+import { passwordAction } from "$lib/server/changePassword";
 import { systemLogger } from "$lib/server/logger";
 import type { Docente, Materia } from "../../../../../../../app";
-import type { PageServerLoad } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load = (async ({
   locals: { client, controlEstudio, config },
@@ -62,4 +63,8 @@ function getSemester(semester: string): string {
       break;
   }
   return sem;
+}
+
+export const actions: Actions = {
+  ...passwordAction
 }

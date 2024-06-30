@@ -5,6 +5,7 @@
   import { ChevronRight, Logout } from "@steeze-ui/material-design-icons";
   import { Icon } from "@steeze-ui/svelte-icon";
   import type { LayoutData } from "./$types";
+  import PopupActions from "$lib/components/PopupActions.svelte";
 
   export let data: LayoutData;
 </script>
@@ -53,14 +54,7 @@
     <img src={Logo} alt="" class="logo" />
   </a>
   <svelte:fragment slot="trail">
-    <form method="post" action={`/coordinadores/logout?nombre=${data.nombre}`}>
-      <button
-        type="submit"
-        class="bg-pink-600 text-gray-200 px-3 py-1 rounded-2xl ml-4 h-[50px] text-light-50"
-      >
-        <Icon src={Logout} class="w-8 h-8" />
-      </button>
-    </form>
+    <PopupActions modulo="coordinadores" nombre={data.nombre} />
   </svelte:fragment>
 </AppBar>
 <slot />

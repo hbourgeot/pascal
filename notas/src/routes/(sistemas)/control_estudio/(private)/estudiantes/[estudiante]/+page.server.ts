@@ -1,6 +1,8 @@
-import type { PageServerLoad } from "./$types";
-import type { Estudiante, Notas } from "../../../../../../app";
+import { passwordAction } from "$lib/server/changePassword";
 import { systemLogger } from "$lib/server/logger";
+import type { Estudiante, Notas } from "../../../../../../app";
+import type { PageServerLoad, Actions } from "./$types";
+
 export const load: PageServerLoad = async ({
   locals: { client, controlEstudio },
   params,
@@ -21,4 +23,8 @@ export const load: PageServerLoad = async ({
   const notas: Notas[] = dataMa.notas;
 
   return { estudiante, notas };
+};
+
+export const actions: Actions = {
+  ...passwordAction,
 };

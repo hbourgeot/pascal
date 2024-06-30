@@ -1,6 +1,7 @@
 import { systemLogger } from "$lib/server/logger";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ params, locals: { controlEstudio, client } }) => {
   systemLogger.info(
@@ -57,4 +58,6 @@ export const actions: Actions = {
     );
     return { message: "Modificado!" };
   },
+
+  ...passwordAction,
 };

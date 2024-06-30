@@ -265,6 +265,7 @@ def update_password():
 
         docente = DocenteModel.get_docente_by_correo(usuario)
         if docente and check_password_hash(docente.password, current_password):
+            new_password = generate_password_hash(new_password, method="sha256")
             affected_rows = DocenteModel.update_password(usuario, new_password)
             if affected_rows == 1:
                 # Registrar trazabilidad

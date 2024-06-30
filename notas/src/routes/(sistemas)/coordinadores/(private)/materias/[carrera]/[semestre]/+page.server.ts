@@ -1,7 +1,8 @@
 import { systemLogger } from "$lib/server/logger";
 import { redirect } from "@sveltejs/kit";
 import type { Docente, Materia } from "../../../../../../../app";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 import { triggerToast } from "$lib/utils/toast";
 
 export const load = (async ({
@@ -72,4 +73,8 @@ function getSemester(semester: string): string {
       break;
   }
   return sem;
+}
+
+export const actions: Actions = {
+  ...passwordAction
 }

@@ -1,6 +1,7 @@
 import { systemLogger } from "$lib/server/logger";
 import { fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ params, locals: { coordinador, client } }) => {
   if (params.materia === "editar") throw redirect(302, "/materias/editar");
@@ -19,3 +20,7 @@ export const load = (async ({ params, locals: { coordinador, client } }) => {
 
   return { carrera, estudiantes, materia };
 }) satisfies PageServerLoad;
+
+export const actions: Actions = {
+  ...passwordAction
+}

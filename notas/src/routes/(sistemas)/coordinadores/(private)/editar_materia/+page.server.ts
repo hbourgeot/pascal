@@ -2,6 +2,7 @@ import { systemLogger } from "$lib/server/logger";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Docente, Materia } from "../../../../../app";
+import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ locals: { client, coordinador, config } }) => {
   const { ok, data } = await client.GET("/api/docente");
@@ -79,4 +80,6 @@ export const actions: Actions = {
 
     return { message: "Modificado exitosamente!" };
   },
+
+  ...passwordAction,
 };
