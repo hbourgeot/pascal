@@ -8,24 +8,21 @@
   export let data: PageData;
 
   let superUsuario: SuperUsuario = data.superUsuario;
-
-  let panel = false;
-  let clicked = 0;
 </script>
 
 <svelte:head>
   <title>Super usuario | IUTEPAS</title>
 </svelte:head>
 <div
-  class="flex flex-center flex-col w-full max-h-auto gap-6 bg-gray-100"
-  style="min-height: calc(100vh + 10rem);"
+  class="flex flex-center flex-col w-full max-h-auto gap-6"
+  style="min-height: 90.6vh"
 >
   <h1 class="w-[90%] text-2xl font-bold text-center capitalize">
     ¡Bienvenid@, {superUsuario.nombre}!
   </h1>
   <div
-    class="w-[98%] flex flex-col items-center gap-10 bg-white rounded-lg"
-    style="min-height: calc(100vh); max-height: auto; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;"
+    class="w-[70%] flex flex-col items-center gap-10 p-8 bg-white rounded-lg"
+    style="max-height: auto; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;"
   >
     <div class="w-full mt-5 flex flex-wrap gap-5 flex-center">
       <a

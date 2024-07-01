@@ -37,24 +37,11 @@ def get_configuraciones():
         return jsonify({"message": str(ex)}), 500
 
 @config.route('/<id>')
-@jwt_required()
 def get_configuracion(id):
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
         configuracion = ConfigModel.get_configuracion(id)
         
         if configuracion is not None:
-            # Registrar trazabilidad
-            trazabilidad = Trazabilidad(
-                accion=f"Obtener Configuración con id: {id}",
-                usuario=usuario,
-                fecha=datetime.now(),
-                modulo="Configuraciones",
-                nivel_alerta=1
-            )
-            TrazabilidadModel.add_trazabilidad(trazabilidad)
-
             return jsonify({"ok": True, "status": 200, "data": configuracion.to_JSON()})
         else:
             return jsonify({"ok": False, "status": 404, "data": {"message": "config no disponible"}}), 404

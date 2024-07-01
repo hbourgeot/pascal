@@ -18,7 +18,7 @@
 </svelte:head>
 <div
   class="flex flex-center flex-col w-full max-h-auto gap-6"
-  style="min-height: 91vh;"
+  style="min-height: 90.6vh;"
 >
   <h1 class="w-[90%] text-2xl font-bold text-center capitalize">
     ¡Bienvenid@, {coordinador.nombre}!
