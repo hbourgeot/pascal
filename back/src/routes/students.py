@@ -31,7 +31,7 @@ def get_students():
             accion="Obtener todos los estudiantes",
             usuario=usuario,
             fecha=datetime.now(),
-            modulo="Estudiantes",
+            modulo="General",
             nivel_alerta=1
         )
         TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -54,7 +54,7 @@ def get_student(cedula):
                 accion=f"Obtener estudiante con cédula: {cedula}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Estudiantes",
+                modulo="General",
                 nivel_alerta=1
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -94,7 +94,7 @@ def add_student():
                 accion=f"Añadir estudiante con cédula: {cedula}, nombre: {fullname}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Estudiantes",
+                modulo="Administración",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -132,7 +132,7 @@ def update_student(cedula):
                 accion=f"Actualizar estudiante con cédula: {cedula}, nombre: {fullname}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Estudiantes",
+                modulo="Administración",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -216,7 +216,7 @@ def get_notas():
                 accion=f"Obtener notas del estudiante con cédula: {student_entity.cedula}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Estudiantes",
+                modulo="General",
                 nivel_alerta=1
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -344,7 +344,7 @@ def jwt_student():
                     accion=f"Refrescar sesión del estudiante con cédula: {student.cedula}",
                     usuario=student.fullname,
                     fecha=datetime.now(),
-                    modulo="Autenticacion",
+                    modulo="Estudiantes",
                     nivel_alerta=1
                 )
                 TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -355,37 +355,3 @@ def jwt_student():
     except Exception as ex:
         return jsonify({"message": str(ex)}), 500
 
-
-@main.route('/update-password', methods=["PATCH"])
-@jwt_required()
-def update_password_student():
-    try:
-        claims = get_jwt()
-        usuario = claims.get('sub')
-        nombre = claims.get('nombre')
-
-        current_password = request.json['current_password']
-        new_password = request.json['new_password']
-
-        student = StudentModel.get_student_by_correo(usuario)
-        if student and check_password_hash(student.password, current_password):
-            new_password = generate_password_hash(new_password, method="sha256")
-            affected_rows = StudentModel.update_password(usuario, new_password)
-            if affected_rows == 1:
-                # Registrar trazabilidad
-                trazabilidad = Trazabilidad(
-                    accion=f"Actualizar contraseña del estudiante: {nombre}",
-                    usuario=nombre,
-                    fecha=datetime.now(),
-                    modulo="Estudiantes",
-                    nivel_alerta=2
-                )
-                TrazabilidadModel.add_trazabilidad(trazabilidad)
-
-                return jsonify({"ok": True, "status": 200, "data": "Contraseña actualizada exitosamente"})
-            else:
-                return jsonify({"ok": False, "status": 500, "data": "Error al actualizar la contraseña"}), 500
-        else:
-            return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
-    except Exception as ex:
-        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

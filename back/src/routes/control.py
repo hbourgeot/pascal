@@ -28,7 +28,7 @@ def get_todo_control():
             accion="Obtener todo el Control",
             usuario=usuario,
             fecha=datetime.now(),
-            modulo="Control",
+            modulo="Control de estudios",
             nivel_alerta=1
         )
         TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -51,7 +51,7 @@ def get_control(cedula):
                 accion=f"Obtener Control con cédula: {cedula}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Control",
+                modulo="Control de estudios",
                 nivel_alerta=1
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -84,7 +84,7 @@ def add_control():
                 accion=f"Añadir Control con cédula: {cedula}, nombre: {fullname}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Control",
+                modulo="Control de estudios",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -116,7 +116,7 @@ def update_coordinador(cedula):
                 accion=f"Actualizar Control con cédula: {cedula}, nombre: {fullname}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Control",
+                modulo="Control de estudios",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -143,7 +143,7 @@ def delete_coordinador(cedula):
                 accion=f"Eliminar Control con cédula: {cedula}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Control",
+                modulo="Control de estudios",
                 nivel_alerta=3
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -238,7 +238,7 @@ def update_password_control():
                     accion=f"Actualizar contraseña del usuario de control: {nombre}",
                     usuario=nombre,
                     fecha=datetime.now(),
-                    modulo="Control",
+                    modulo="Control de estudios",
                     nivel_alerta=2
                 )
                 TrazabilidadModel.add_trazabilidad(trazabilidad)

@@ -34,7 +34,7 @@ def get_pagos():
             accion="Obtener todos los pagos",
             usuario=usuario,
             fecha=datetime.now(),
-            modulo="Pagos",
+            modulo="Administración",
             nivel_alerta=1
         )
         TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -58,7 +58,7 @@ def get_pago(id):
                 accion=f"Obtener pago con id: {id}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Pagos",
+                modulo="Administración",
                 nivel_alerta=1
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -102,7 +102,7 @@ def add_pago():
                 accion=f"Añadir pago para el estudiante con cédula: {cedula_estudiante}, monto: {monto}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Pagos",
+                modulo="Administración",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -136,7 +136,7 @@ def update_pago(id):
                 accion=f"Actualizar pago con id: {id} para el estudiante con cédula: {cedula_estudiante}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Pagos",
+                modulo="Administración",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)

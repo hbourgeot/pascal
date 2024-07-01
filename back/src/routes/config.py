@@ -27,7 +27,7 @@ def get_configuraciones():
             accion="Obtener Configuraciones",
             usuario=usuario,
             fecha=datetime.now(),
-            modulo="Configuraciones",
+            modulo="General",
             nivel_alerta=1
         )
         TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -76,7 +76,7 @@ def add_configuracion():
                 accion=f"Añadir Configuración con ciclo: {ciclo}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Configuraciones",
+                modulo="General",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -115,7 +115,7 @@ def update_configuracion(id):
                 accion=f"Actualizar Configuración con id: {id}, ciclo: {ciclo}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Configuraciones",
+                modulo="General",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -142,7 +142,7 @@ def delete_configuracion(id):
                 accion=f"Eliminar Configuración con id: {id}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Configuraciones",
+                modulo="General",
                 nivel_alerta=3
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)

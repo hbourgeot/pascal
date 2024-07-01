@@ -29,7 +29,7 @@ def get_Super(cedula):
                 accion=f"Obtener super usuario con cédula: {cedula}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="SuperUsuario",
+                modulo="Supervisión",
                 nivel_alerta=1
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -62,7 +62,7 @@ def add_Super():
                 accion=f"Añadir super usuario con cédula: {cedula}, nombre: {nombre}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="SuperUsuario",
+                modulo="Supervisión",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -93,7 +93,7 @@ def update_Super(cedula):
                 accion=f"Actualizar super usuario con cédula: {cedula}, nombre: {nombre}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="SuperUsuario",
+                modulo="Supervisión",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -120,7 +120,7 @@ def delete_Super(cedula):
                 accion=f"Eliminar super usuario con cédula: {cedula}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="SuperUsuario",
+                modulo="Supervisión",
                 nivel_alerta=3
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -152,7 +152,7 @@ def login_super_usuario():
                 )
                 TrazabilidadModel.add_trazabilidad(trazabilidad)
 
-                return jsonify({"ok": True, "status": 200, "data": {"superUsuario": super_usuario.to_JSON(), "access_token": f"Bearer {access_token}"}})
+                return jsonify({"ok": True, "status": 200, "data": {"Supervisión": super_usuario.to_JSON(), "access_token": f"Bearer {access_token}"}})
             else:
                 return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
         else:
@@ -212,7 +212,7 @@ def update_password_super_usuario():
                     accion=f"Actualizar contraseña del super usuario: {nombre}",
                     usuario=nombre,
                     fecha=datetime.now(),
-                    modulo="SuperUsuario",
+                    modulo="Supervisión",
                     nivel_alerta=2
                 )
                 TrazabilidadModel.add_trazabilidad(trazabilidad)

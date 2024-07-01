@@ -7,8 +7,6 @@ from models.usermodel import UserModel
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
-from models.entities.SuperUsuario import SuperUsuario
-from models.SuperUsuarioModel import SuperUsuarioModel
 
 user = Blueprint('user_blueprint', __name__)
 

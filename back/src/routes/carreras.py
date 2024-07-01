@@ -27,7 +27,7 @@ def get_carreras():
             accion="Obtener Carreras",
             usuario=usuario,
             fecha=datetime.now(),
-            modulo="Carreras",
+            modulo="General",
             nivel_alerta=1
         )
         TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -50,7 +50,7 @@ def get_carrera(id):
                 accion=f"Obtener Carrera con id: {id}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Carreras",
+                modulo="General",
                 nivel_alerta=1
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -80,7 +80,7 @@ def add_carrera():
                 accion=f"Añadir Carrera con id: {id}, nombre: {nombre}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Carreras",
+                modulo="General",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -108,7 +108,7 @@ def update_carrera(id):
                 accion=f"Actualizar Carrera con id: {id}, nombre: {nombre}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Carreras",
+                modulo="General",
                 nivel_alerta=2
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
@@ -135,7 +135,7 @@ def delete_carrera(id):
                 accion=f"Eliminar Carrera con id: {id}",
                 usuario=usuario,
                 fecha=datetime.now(),
-                modulo="Carreras",
+                modulo="General",
                 nivel_alerta=3
             )
             TrazabilidadModel.add_trazabilidad(trazabilidad)
