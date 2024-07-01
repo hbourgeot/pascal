@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: youruser
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  back:
+    build:
+      context: ./back
+    image: yourusername/back:latest  # Nombre de la imagen personalizado
+    container_name: back
+    environment:
+      DATABASE_URL: postgres://youruser:yourpassword@postgresql:5432/yourdatabase
+    depends_on:
+      - postgresql
+    networks:
+      - backend
+      - frontend
+
+  admin:
+    build:
+      context: ./admin
+    image: yourusername/admin:latest  # Nombre de la imagen personalizado
+    container_name: admin
+    depends_on:
+      - back
+    networks:
+      - frontend
+    environment:
+      - baseURL=http://back:8000
+    ports:
+      - 3000:5173
+
+  notas:
+    build:
+      context: ./notas
+    image: yourusername/notas:latest  # Nombre de la imagen personalizado
+    container_name: notas
+    depends_on:
+      - back
+    networks:
+      - frontend
+    environment:
+      - baseURL=http://back:8000
+    ports:
+      - 3001:5173
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+  frontend:
