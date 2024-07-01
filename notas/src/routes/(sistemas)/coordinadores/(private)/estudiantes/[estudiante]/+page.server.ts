@@ -2,19 +2,11 @@ import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
 import type { Estudiante, Notas } from "../../../../../../app";
-import { systemLogger } from "$lib/server/logger";
 
-export const load: PageServerLoad = async ({
-  locals: { client, coordinador },
-  params,
-}) => {
+export const load: PageServerLoad = async ({ locals: { client }, params }) => {
   const { ok, data } = await client.GET(`/api/students/${params.estudiante}`);
 
   if (!ok) return { estudiante: null, notas: [] };
-
-  systemLogger.info(
-    `${coordinador.nombre} ha entrado a ver las notas del estudiante con cédula ${params.estudiante}`
-  );
 
   const estudiante: Estudiante = data;
 
@@ -29,5 +21,5 @@ export const load: PageServerLoad = async ({
 };
 
 export const actions: Actions = {
-  ...passwordAction
-}
+  ...passwordAction,
+};

@@ -1,5 +1,5 @@
+import type { Notas } from "../../../../app";
 import type { PageServerLoad } from "./$types";
-import type { Materia, Notas } from "../../../../app";
 
 export const load = (async ({ locals: { estudiante, client }, cookies }) => {
   let headers = {
@@ -14,7 +14,6 @@ export const load = (async ({ locals: { estudiante, client }, cookies }) => {
   );
 
   const {
-    ok: carOk,
     data: { carreras },
   } = await client.GET("/api/carreras");
   const carrera: { id: string; nombre: string } = carreras.find(

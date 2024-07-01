@@ -1,14 +1,9 @@
-import { systemLogger } from "$lib/server/logger";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ locals: { client, superUsuario } }) => {
-  systemLogger.info(
-    `${superUsuario.nombre} va a ver, editar y/o crear carreras`
-  );
   const {
-    ok: carOk,
     data: { carreras },
   } = await client.GET("/api/carreras");
 
@@ -24,7 +19,6 @@ export const actions: Actions = {
     console.log(ok, data);
 
     if (!ok) return fail(400, { message: data.message });
-    systemLogger.info(`${superUsuario.nombre} ha agregado una nueva carrera`);
 
     return { message: "Modificado exitosamente!" };
   },
@@ -42,12 +36,8 @@ export const actions: Actions = {
 
     if (!ok) return fail(400, { message: data.message });
 
-    systemLogger.info(
-      `${superUsuario.nombre} ha editado la carrera ${carrera.id}`
-    );
-
     return { message: "Modificado exitosamente!" };
   },
 
-  ...passwordAction
+  ...passwordAction,
 };

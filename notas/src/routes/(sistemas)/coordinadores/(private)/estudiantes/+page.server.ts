@@ -1,19 +1,12 @@
 import type { Actions, PageServerLoad } from "./$types";
-import { systemLogger } from "$lib/server/logger";
 import { passwordAction } from "$lib/server/changePassword";
 
-export const load: PageServerLoad = async ({
-  locals: { client, coordinador },
-}) => {
+export const load: PageServerLoad = async ({ locals: { client } }) => {
   const { ok, data: estudiantes } = await client.GET("/api/students");
   const { ok: isOk, data } = await client.GET("/api/carreras");
   if (!ok || !isOk) {
     return { estudiantes: [], carreras: [] };
   }
-
-  systemLogger.info(
-    coordinador.nombre + " ha entrado al módulo de los estudiantes"
-  );
 
   const carreras: {
     id: string;

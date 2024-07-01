@@ -1,5 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
-import { EvStation } from "@steeze-ui/material-design-icons";
 import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({
   locals: { estudiante, client },
@@ -11,10 +9,6 @@ export const load: PageServerLoad = async ({
     (carrera: { id: string; nombre: string }) =>
       carrera.id === estudiante.carrera
   ).nombre;
-
-  systemLogger.info(
-    `El estudiante ${estudiante.nombre} ha generado su constancia de estudios`
-  );
 
   return {
     cedula: estudiante.cedula,

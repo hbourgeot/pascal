@@ -1,11 +1,10 @@
 <script lang="ts">
+  import { ExpandLess, ExpandMore } from "@steeze-ui/material-design-icons";
   import { Icon } from "@steeze-ui/svelte-icon";
-  import { ExpandMore, ExpandLess } from "@steeze-ui/material-design-icons";
   import type { PageData } from "./$types";
 
-  import type { Docente, Materia } from "../../../app";
-  import { onMount } from "svelte";
-
+  import type { Docente, Materia } from "../../../../app";
+  
   export let data: PageData;
 
   let docente: Docente = data.docente;

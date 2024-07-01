@@ -1,4 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
@@ -11,11 +10,7 @@ export const load: PageServerLoad = async ({
   if (!ok || !isOk) {
     return { estudiantes: [], carreras: [] };
   }
-
-  systemLogger.info(
-    controlEstudio.nombre + " ha entrado a ver la lista de los estudiantes"
-  );
-
+  
   const carreras: {
     id: string;
     nombre: string;

@@ -1,10 +1,7 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
-export const load = (async ({ locals: { client, coordinador, config } }) => {
-  systemLogger.info(`${coordinador.nombre} ha entrado a ver las materias`);
-
+export const load = (async ({ locals: { client, coordinador } }) => {
   const { ok, data } = await client.GET("/api/carreras");
 
   let carreras: { id: string; nombre: string }[] = data.carreras
@@ -21,5 +18,5 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  ...passwordAction
-}
+  ...passwordAction,
+};

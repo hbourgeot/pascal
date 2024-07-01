@@ -1,7 +1,6 @@
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Docente, Materia } from "../../../../../app";
-import { systemLogger } from "$lib/server/logger";
 import { passwordAction } from "$lib/server/changePassword";
 
 export const load: PageServerLoad = async ({
@@ -11,10 +10,6 @@ export const load: PageServerLoad = async ({
   if (!ok) {
     return { docentes: [], materias: [], autocom: [] };
   }
-
-  systemLogger.info(
-    `${coordinador.nombre} ha entrado a registrar una nueva materia`
-  );
 
   let docentes: Docente[] = data.docente
     .map((docente: Docente) => ({
@@ -70,10 +65,6 @@ export const actions: Actions = {
     if (!ok) {
       return fail(400, data);
     }
-
-    systemLogger.info(
-      `${coordinador.nombre} ha registrado una materia llamada ${materia.nombre}`
-    );
 
     return { message: "Materia registrada!" };
   },

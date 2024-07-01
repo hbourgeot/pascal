@@ -1,7 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 import { client } from "/server/fetch";
-import { logger } from "$lib/server/logger";
 declare global {
   namespace App {
     // interface Error {}

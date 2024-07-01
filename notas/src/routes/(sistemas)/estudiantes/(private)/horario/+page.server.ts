@@ -1,7 +1,6 @@
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Docente, Materia } from "../../../../../app";
-import { systemLogger } from "$lib/server/logger";
 
 export const load: PageServerLoad = async ({
   locals: { client, estudiante, config },
@@ -17,9 +16,6 @@ export const load: PageServerLoad = async ({
   let hoy = new Date();
 
   if (hoy < inicio) {
-    systemLogger.info(
-      `El estudiante ${estudiante.nombre} ha intentado entrar al apartado de inscribir materias cuando aún no ha comenzado dicho proceso`
-    );
     return {
       materias: [],
       estudiante: null,
@@ -30,9 +26,6 @@ export const load: PageServerLoad = async ({
   }
 
   if (hoy > final) {
-    systemLogger.info(
-      `El estudiante ${estudiante.nombre} ha intentado entrar al apartado de inscribir materias cuando ya ha finalizado dicho proceso`
-    );
     return {
       materias: [],
       estudiante: null,
@@ -76,12 +69,6 @@ export const load: PageServerLoad = async ({
     docente: docentes.find((doc: Docente) => doc.cedula == mat.id_docente)
       ?.nombre,
   }));
-
-  console.log(materias);
-
-  systemLogger.warn(
-    `El estudiante ${estudiante.nombre} entró a registrar su horario`
-  );
 
   return {
     materias: materias,
@@ -133,10 +120,6 @@ export const actions: Actions = {
         return fail(400, { message: data.message });
       }
     }
-
-    systemLogger.warn(
-      `El estudiante ${estudiante.nombre} ha terminado de registrar su horario satisfactoriamente`
-    );
 
     return { message: "¡Su horario ha sido inscrito exitosamente!" };
   },

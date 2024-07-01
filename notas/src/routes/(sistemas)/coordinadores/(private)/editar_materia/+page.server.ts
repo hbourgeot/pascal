@@ -1,4 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Docente, Materia } from "../../../../../app";
@@ -9,10 +8,6 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
   if (!ok) {
     return { docentes: [], materias: [], autocom: [] };
   }
-
-  systemLogger.info(
-    `${coordinador.nombre} ha entrado a editar una nueva materia`
-  );
 
   let docentes: Docente[] = data.docente
     .map((docente: Docente) => ({
@@ -47,7 +42,9 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
     data: { carreras },
   } = await client.GET("/api/carreras");
 
-  console.log(dataMat.materias.filter((materia: Materia) => materia.id !== null));
+  console.log(
+    dataMat.materias.filter((materia: Materia) => materia.id !== null)
+  );
 
   return {
     docentes,
@@ -61,7 +58,7 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ locals: { client, coordinador }, request }) => {
+  default: async ({ locals: { client }, request }) => {
     const materia: any = Object.fromEntries(await request.formData());
     console.log(materia);
 
@@ -73,10 +70,6 @@ export const actions: Actions = {
     console.log(ok, data);
 
     if (!ok) return fail(400, { message: data.message });
-
-    systemLogger.info(
-      `${coordinador.nombre} ha editado la materia ${materia.nombre}`
-    );
 
     return { message: "Modificado exitosamente!" };
   },

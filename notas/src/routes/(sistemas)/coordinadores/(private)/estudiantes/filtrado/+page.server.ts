@@ -1,20 +1,12 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
-export const load: PageServerLoad = async ({
-  locals: { client, coordinador },
-  url,
-}) => {
+export const load: PageServerLoad = async ({ locals: { client }, url }) => {
   const { ok, data: estudiantes } = await client.GET("/api/students");
   const { ok: isOk, data } = await client.GET("/api/carreras");
   if (!ok || !isOk) {
     return { estudiantes: [], carreras: [] };
   }
-
-  systemLogger.info(
-    coordinador.nombre + " ha entrado a ver la lista de los estudiantes"
-  );
 
   const carreras: {
     id: string;
@@ -35,7 +27,6 @@ export const load: PageServerLoad = async ({
   };
 };
 
-
 export const actions: Actions = {
-  ...passwordAction
-}
+  ...passwordAction,
+};

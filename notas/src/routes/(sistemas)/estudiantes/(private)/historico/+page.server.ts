@@ -1,4 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({
@@ -22,6 +21,5 @@ export const load: PageServerLoad = async ({
       materias: [],
     };
 
-  systemLogger.info(`${estudiante.nombre} ha entrado a ver sus notas`);
   return { estudiante, materias: data.notas };
 };

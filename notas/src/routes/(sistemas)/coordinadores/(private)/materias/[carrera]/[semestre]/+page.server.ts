@@ -1,4 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
 import { redirect } from "@sveltejs/kit";
 import type { Docente, Materia } from "../../../../../../../app";
 import type { PageServerLoad, Actions } from "./$types";
@@ -9,13 +8,6 @@ export const load = (async ({
   locals: { client, coordinador, config },
   params,
 }) => {
-  systemLogger.info(
-    `${
-      coordinador.nombre
-    } ha entrado a ver las materias de la carrera con código '${
-      params.carrera
-    }' del ${getSemester(params.semestre)}`
-  );
   const { ok, data } = await client.GET("/api/materias");
   const { data: dataDocentes } = await client.GET("/api/docente");
   if (!ok) {

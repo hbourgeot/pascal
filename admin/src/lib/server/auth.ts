@@ -1,6 +1,5 @@
 import { baseURL } from "$env/static/private";
 import type { RequestEvent } from "@sveltejs/kit";
-import { systemLogger } from "./logger";
 
 export const getUser = async (token: string) => {
   try {

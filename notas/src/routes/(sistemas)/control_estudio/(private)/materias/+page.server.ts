@@ -1,9 +1,7 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ locals: { client, controlEstudio, config } }) => {
-  systemLogger.info(`${controlEstudio.nombre} ha entrado a ver las materias`);
 
   const { ok, data } = await client.GET("/api/carreras");
 

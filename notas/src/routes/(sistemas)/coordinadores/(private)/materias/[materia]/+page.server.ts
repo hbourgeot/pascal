@@ -1,13 +1,10 @@
-import { systemLogger } from "$lib/server/logger";
 import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
 export const load = (async ({ params, locals: { coordinador, client } }) => {
   if (params.materia === "editar") throw redirect(302, "/materias/editar");
-  systemLogger.info(
-    `${coordinador.nombre} ha entrado a ver la materia ${params.materia}`
-  );
+  
   const { ok, data } = await client.GET(`/api/materias/${params.materia}`);
   if (!ok) return { materia: null };
 
