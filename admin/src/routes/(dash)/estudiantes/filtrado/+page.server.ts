@@ -1,4 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals: { client, user }, url }) => {
@@ -9,6 +8,5 @@ export const load: PageServerLoad = async ({ locals: { client, user }, url }) =>
     return { estudiantes: [], carreras: [] };
   }
 
-  systemLogger.info(user.nombre + " ha entrado a ver la lista de los estudiantes");
   return { estudiantes: estudiantes, carreras, query: url.searchParams.get("s") };
 };

@@ -1,6 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { systemLogger } from "$lib/server/logger";
 
 type Carrera = { id: string; nombre: string };
 
@@ -11,11 +10,8 @@ export const load: PageServerLoad = async ({ locals: { client, user } }) => {
   ]);
 
   if (!ok || !isOk) {
-    systemLogger.error("Error cargando datos desde la API");
     return { estudiantes: [], carreras: [] };
   }
-
-  systemLogger.info(`${user.nombre} ha entrado al módulo de los estudiantes`);
 
   const carreras: Carrera[] = data.carreras
     .map((carrera: Carrera) => ({ ...carrera }))
@@ -41,11 +37,6 @@ export const actions: Actions = {
     };
 
     const { ok, data } = await client.POST("/api/students/add", studentInfo);
-    systemLogger.warn(
-      `${
-        user.nombre
-      } ha registrado al estudiante ${studentInfo.fullname.toUpperCase()}`
-    );
 
     if (!ok) {
       return fail(400, { message: data.message });

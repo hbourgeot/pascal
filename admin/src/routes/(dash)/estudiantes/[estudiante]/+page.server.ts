@@ -1,7 +1,6 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Estudiante } from "../../../../app";
-import { systemLogger } from "$lib/server/logger";
 import moment from "moment";
 
 export const load = (async ({ locals: { client, user }, params }) => {
@@ -12,7 +11,6 @@ export const load = (async ({ locals: { client, user }, params }) => {
   if (!ok && !isOk) {
     return {};
   }
-  systemLogger.info(user.nombre + " ha entrado a ver los datos del estudiante " + data.nombre.toUpperCase())
 
   const carreras: {
     id: string;
@@ -58,8 +56,6 @@ export const actions: Actions = {
         ok: false,
       });
     }
-
-    systemLogger.warn(user.nombre + " ha editado algunos datos del estudiante " + obj.fullname.toUpperCase())
 
     return { message: "El estudiante ha sido editado exitosamente", ok: true };
   },

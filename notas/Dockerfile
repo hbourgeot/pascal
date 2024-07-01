@@ -1,21 +1,18 @@
-FROM node:lts-slim as build
+# Dockerfile
+FROM node:16-alpine AS build
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN rm -rf node_modules
-RUN rm -rf build
-COPY . .
 RUN npm install --force
+
+COPY . .
 RUN npm run build
 
-FROM node:lts-slim as run
+FROM nginx:alpine
 
-WORKDIR /app
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/build ./build
-RUN npm install --production --force
+COPY --from=build /app/build /usr/share/nginx/html
 
-EXPOSE 5173
+EXPOSE 80
 
-ENTRYPOINT [ "npm", "run", "start" ]
+CMD ["nginx", "-g", "daemon off;"]

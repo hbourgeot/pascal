@@ -1,6 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { systemLogger } from "$lib/server/logger";
 
 export const load: PageServerLoad = async ({ locals: { user } }) => {
   if (user) {
@@ -32,8 +31,6 @@ export const actions: Actions = {
       httpOnly: true,
       path: "/",
     });
-
-    systemLogger.info(data.usuario.nombre + " ha iniciado sesión");
 
     throw redirect(300, "/inicio");
   },

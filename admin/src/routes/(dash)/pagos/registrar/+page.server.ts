@@ -1,7 +1,6 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Estudiante } from "../../../../app";
 import type { Actions, PageServerLoad } from "./$types";
-import { systemLogger } from "$lib/server/logger";
 
 export const load = (async ({ locals: { client,user } }) => {
   const { ok: okey, data: estudiantes } = await client.GET("/api/students");
@@ -16,7 +15,6 @@ export const load = (async ({ locals: { client,user } }) => {
   const currency = await response.json();
   const bcv = currency.sources.BCV.quote;
 
-  systemLogger.warn("Atención, " + user.nombre + " puede que registre un pago");
 
   return { estudiantes: estudiantesCedula, tasa: parseFloat(bcv) };
 }) satisfies PageServerLoad;
@@ -44,8 +42,6 @@ export const actions: Actions = {
         }
       }
     }
-
-    systemLogger.warn(user.nombre + " ha registrado un pago del estudiante de C.I. N° " + payload.cedula_estudiante + " por concepto '" + payload.descripcion + "'")
 
     throw redirect(302, `/factura/${data.pagoId}`)
   },

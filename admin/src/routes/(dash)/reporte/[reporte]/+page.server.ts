@@ -1,9 +1,4 @@
-import {
-  moneyBsConverter,
-  moneyUsdConverter,
-} from "$lib/resources/moneyConverter";
 import moment from "moment";
-import type { Estudiante, Pago } from "../../../../app";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals: { client }, params, url }) => {

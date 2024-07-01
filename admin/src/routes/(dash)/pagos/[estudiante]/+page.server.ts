@@ -1,6 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { systemLogger } from '$lib/server/logger';
 
 export const load = (async ({locals:{client, user}, params, url}) => {
     const { ok, data } = await client.GET(`/api/students/${params.estudiante}`)
@@ -30,7 +29,6 @@ export const load = (async ({locals:{client, user}, params, url}) => {
             );
     
     console.log(pagosEstudiante);
-    systemLogger.info(user.nombre + " está viendo los pagos realizados por el estudiante " + data.nombre.toUpperCase())
     
     return {
         estudiante: data,

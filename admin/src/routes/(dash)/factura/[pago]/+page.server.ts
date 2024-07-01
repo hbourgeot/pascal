@@ -1,4 +1,3 @@
-import { systemLogger } from "$lib/server/logger";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ fetch, locals: { client, user }, params }) => {
@@ -41,7 +40,6 @@ export const load = (async ({ fetch, locals: { client, user }, params }) => {
   let { nroFactura } = dataFa;
   nroFactura = nroFactura.toString().padStart(4, "0");
 
-  systemLogger.info(user.nombre + " ha generado la factura nro. " + nroFactura)
   return {
     bcv: bcv,
     estudiante,

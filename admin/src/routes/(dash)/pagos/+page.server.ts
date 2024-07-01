@@ -1,7 +1,6 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Estudiante, Pago } from "../../../app";
-import { systemLogger } from "$lib/server/logger";
 
 export const load: PageServerLoad = async ({ locals: { client, user } }) => {
   const { ok, data } = await client.GET("/api/pagos");
@@ -24,7 +23,6 @@ export const load: PageServerLoad = async ({ locals: { client, user } }) => {
     estudiantesOptions.push(estudiantes.find((estudiante: Estudiante) => estudiante.cedula == cedula))
   }
 
-  systemLogger.info(user.nombre + " ha entrado al módulo de los pagos")
 
   return { estudiantes: estudiantesOptions, ok: true };
 };
