@@ -1,33 +1,33 @@
 services:
-  postgresql:
+  postgres:
     image: postgres:latest
     container_name: postgres
-    environment:
-      POSTGRES_USER: youruser
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: yourdatabase
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: P45c4lC46u4*
+      POSTGRES_DB: postgres
     networks:
       - backend
 
   back:
     build:
       context: ./back
-    image: yourusername/back:latest  # Nombre de la imagen personalizado
+    image: hbourgeot/back:latest  # Nombre de la imagen personalizado
     container_name: back
-    environment:
-      DATABASE_URL: postgres://youruser:yourpassword@postgresql:5432/yourdatabase
     depends_on:
-      - postgresql
+      - postgres
     networks:
       - backend
       - frontend
+    ports:
+      - 3002:8000
 
   admin:
     build:
       context: ./admin
-    image: yourusername/admin:latest  # Nombre de la imagen personalizado
+    image: hbourgeot/admin:latest  # Nombre de la imagen personalizado
     container_name: admin
     depends_on:
       - back
@@ -35,13 +35,14 @@ services:
       - frontend
     environment:
       - baseURL=http://back:8000
+      - ORIGIN=http://localhost:3000
     ports:
-      - 3000:80
+      - 3000:3000
 
   notas:
     build:
       context: ./notas
-    image: yourusername/notas:latest  # Nombre de la imagen personalizado
+    image: hbourgeot/notas:latest  # Nombre de la imagen personalizado
     container_name: notas
     depends_on:
       - back
@@ -49,8 +50,25 @@ services:
       - frontend
     environment:
       - baseURL=http://back:8000
+      - ORIGIN=http://localhost:3000
     ports:
-      - 3001:80
+      - 3001:3000
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pascal@admin.com
+      PGADMIN_DEFAULT_PASSWORD: P45c41C46U4
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: P45c4lC46u4*
+      POSTGRES_DB: pascal
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - backend
 
 volumes:
   postgres_data:

@@ -1,5 +1,5 @@
 # Dockerfile
-FROM node:16-alpine AS build
+FROM node:18.19.1-alpine AS build
 
 WORKDIR /app
 
@@ -9,10 +9,12 @@ RUN npm install --force
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine
+FROM node:18.19.1-alpine
 
-COPY --from=build /app/build /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
+COPY --from=build /app .
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+
+CMD ["node", "build"]
