@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({
 };
 
 export const actions: Actions = {
-  default: async ({ locals: { client }, request }) => {
+  submit: async ({ locals: { client }, request }) => {
     const control: ControlEstudio = Object.fromEntries(
       await request.formData()
     ) as unknown as ControlEstudio;

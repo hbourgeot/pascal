@@ -50,6 +50,7 @@
           await update();
         };
       }}
+      action="?/submit"
       class="grid grid-cols-2 gap-3"
     >
       <div class="col-start-1 col-end-3">

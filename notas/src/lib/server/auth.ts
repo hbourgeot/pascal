@@ -1,5 +1,5 @@
 import { baseURL } from "$env/static/private";
-import type { RequestEvent } from "@sveltejs/kit";
+import { error, redirect, type RequestEvent } from "@sveltejs/kit";
 import type { Coordinacion, Docente, Estudiante } from "../../app";
 
 export const logInStudent = async (
@@ -124,7 +124,9 @@ export const getUser = async (token: string, endpoint: string) => {
       method: "GET",
       headers,
     });
+
     const { data: user } = await res.json();
+
 
     return user;
   } catch (error) {
@@ -152,5 +154,7 @@ export const logOut = async (
     cookies.delete("access_token", { path: path });
   } catch (e) {
     console.error(e);
+  } finally {
+    throw redirect(302, path + "/login")
   }
 };

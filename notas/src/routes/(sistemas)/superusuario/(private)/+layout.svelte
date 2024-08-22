@@ -1,11 +1,11 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import PopupActions from "$lib/components/PopupActions.svelte";
   import Logo from "$lib/images/logo.jpg";
-  import { Toast, AppBar } from "@skeletonlabs/skeleton";
-  import { ChevronRight, Logout } from "@steeze-ui/material-design-icons";
+  import { AppBar, Toast } from "@skeletonlabs/skeleton";
+  import { ChevronRight } from "@steeze-ui/material-design-icons";
   import { Icon } from "@steeze-ui/svelte-icon";
   import type { LayoutData } from "./$types";
-  import PopupActions from "$lib/components/PopupActions.svelte";
 
   export let data: LayoutData;
 </script>

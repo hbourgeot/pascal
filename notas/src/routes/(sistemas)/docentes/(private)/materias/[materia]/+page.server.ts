@@ -46,7 +46,7 @@ export const actions: Actions = {
     return { message: "Modificado!" };
   },
 
-  carga: async ({ request, locals: { client, docente }, params }) => {
+  carga: async ({ request, locals: { client, token }, params }) => {
     // @ts-ignore
     const { files } = Object.fromEntries(
       await request.formData()
@@ -57,7 +57,7 @@ export const actions: Actions = {
     formData.append("folder", params.materia);
     formData.append("ciclo", ciclo);
 
-    const { ok, data } = await client.POST(`/api/archivos/upload`, formData);
+    const { ok, data } = await client.POST(`/api/archivos/upload`, formData, {"Authorization": token});
 
     if (!ok) return fail(400, { message: data.message });
 

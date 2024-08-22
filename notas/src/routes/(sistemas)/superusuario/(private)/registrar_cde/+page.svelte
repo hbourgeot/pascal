@@ -76,6 +76,7 @@
 <svelte:head>
   <title>Registrar personal | Super usuario | IUTEPAS</title>
 </svelte:head>
+<section class="min-h-[calc(100vh-80px)] pb-8">
 <div
   class="container lg:w-2/3 md:w-3/4 mx-auto px-4 py-8 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
 >
@@ -86,7 +87,7 @@
     <h2 class="text-2xl font-semibold mb-4 text-center">
       Añadir Personal de Control de Estudio
     </h2>
-    <form id="docente-form" method="post" use:enhance={handleSubmit}>
+    <form id="docente-form" method="post" use:enhance={handleSubmit} action="?/submit">
       <div class="mb-4">
         <label for="cedula" class="label">Cedula</label>
         <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
@@ -146,3 +147,4 @@
     <Table source={tableSource} />
   </div>
 </div>
+</section>

@@ -38,6 +38,7 @@ def get_students():
 
         return jsonify({"ok": True, "status": 200, "data": students})
     except Exception as ex:
+        traceback.print_exc()
         return jsonify({"message": str(ex)}), 500
 
 @main.route('/<cedula>')
@@ -176,14 +177,16 @@ def add_student_to_materia(materia: str):
     try:
         claims = get_jwt()
         usuario = claims.get('nombre')
-        correo_estudiante = usuario
+        correo_estudiante = claims.get('sub')
         student: Student | None
         if correo_estudiante is not None:
+            print(correo_estudiante)
             student_entity = Student(correo=correo_estudiante)
             student = StudentModel.login(student_entity)
             if student is not None:
                 affected_rows = StudentModel.add_materia(student, materia)
                 if affected_rows == 1:
+                    print(student)
                     # Registrar trazabilidad
                     trazabilidad = Trazabilidad(
                         accion=f"Añadir materia {materia} al estudiante con cédula: {student.cedula}",
@@ -196,6 +199,7 @@ def add_student_to_materia(materia: str):
 
                     return jsonify({"ok": True, "status": 200, "data": None}), 200
     except Exception as ex:
+        traceback.print_exc()
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}})
 
 @main.route("/materias", methods=["GET"])
@@ -204,8 +208,7 @@ def get_notas():
     try:
         claims = get_jwt()
         usuario = claims.get('nombre')
-        correo_estudiante = usuario
-        student: Student | None
+        correo_estudiante = claims.get('sub')
         if correo_estudiante is not None:
             student_entity = Student(correo=correo_estudiante)
             student_entity = StudentModel.login(student_entity)
@@ -223,6 +226,7 @@ def get_notas():
 
             return jsonify({"ok": True, "status": 200, "data": notas_obj}), 200
     except Exception as ex:
+        traceback.print_exc()
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @main.route("/historico", methods=["GET"])
@@ -231,7 +235,7 @@ def get_historico():
     try:
         claims = get_jwt()
         usuario = claims.get('nombre')
-        correo_estudiante = usuario
+        correo_estudiante = claims.get('sub')
         student: Student | None
         if correo_estudiante is not None:
             student_entity = Student(correo=correo_estudiante)
@@ -259,8 +263,7 @@ def get_horario():
     try:
         claims = get_jwt()
         usuario = claims.get('nombre')
-        correo_estudiante = usuario
-        student: Student | None
+        correo_estudiante = claims.get('sub')
         if correo_estudiante is not None:
             student_entity = Student(correo=correo_estudiante)
             student_entity = StudentModel.login(student_entity)
@@ -340,14 +343,6 @@ def jwt_student():
             student = StudentModel.login(student_entity)
             if student is not None:
                 # Registrar trazabilidad
-                trazabilidad = Trazabilidad(
-                    accion=f"Refrescar sesión del estudiante con cédula: {student.cedula}",
-                    usuario=student.fullname,
-                    fecha=datetime.now(),
-                    modulo="Estudiantes",
-                    nivel_alerta=1
-                )
-                TrazabilidadModel.add_trazabilidad(trazabilidad)
 
                 return jsonify({"ok": True, "status": 200, "data": student.to_JSON()})
             else:

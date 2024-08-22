@@ -70,6 +70,8 @@ export const load: PageServerLoad = async ({
       ?.nombre,
   }));
 
+  console.log(materias)
+
   return {
     materias: materias,
     estudiante,
@@ -79,7 +81,7 @@ export const load: PageServerLoad = async ({
 };
 
 export const actions: Actions = {
-  default: async ({ locals: { client, estudiante }, request, cookies }) => {
+  submit: async ({ locals: { client, estudiante }, request, cookies }) => {
     const materiasIDs: string[] = (await request.formData()).getAll(
       "materias"
     ) as unknown as string[];

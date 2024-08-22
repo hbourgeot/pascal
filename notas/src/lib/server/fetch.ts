@@ -22,14 +22,9 @@ export const client = async (
   }
 
   const token = event.locals.token ?? getAccessToken(event);
-  console.log("token", token, event.locals.token, getAccessToken(event));
-
   if (token) {
     headers["Authorization"] = token;
   }
-
-  console.log("headers", headers);
-  console.log(token, "token");
 
   let res: any;
   try {

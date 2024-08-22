@@ -252,7 +252,7 @@
   >
     <div class="p-8 rounded-xl shadow h-full w-1/2">
       <h2 class="text-2xl font-semibold mb-4 text-center">Editar materia</h2>
-      <form id="docente-form" method="post" use:enhance="{handleSubmit}">
+      <form id="docente-form" method="post" use:enhance="{handleSubmit}" action="?/submit">
         <div class="flex justify-between items-end gap-4">
           <div class="mb-4">
             <label for="id" class="label">Código de Materia</label>

@@ -54,7 +54,7 @@
           valueAttr: {
             type: "password",
             minlength: 3,
-            maxlength: 10,
+            maxlength: 20,
             required: true,
             class: "px-3 py-2 input (password)",
           },
@@ -73,7 +73,7 @@
       return cancel();
     }
 
-    if (clave !== "12345") {
+    if (clave !== data.admin) {
       triggerToast("Clave inválida", 3000);
       return cancel();
     }

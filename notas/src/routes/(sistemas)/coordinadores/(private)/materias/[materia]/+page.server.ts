@@ -2,7 +2,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { passwordAction } from "$lib/server/changePassword";
 
-export const load = (async ({ params, locals: { coordinador, client } }) => {
+export const load = (async ({ params, locals: { client } }) => {
   if (params.materia === "editar") throw redirect(302, "/materias/editar");
   
   const { ok, data } = await client.GET(`/api/materias/${params.materia}`);

@@ -79,73 +79,84 @@
 <svelte:head>
   <title>Registrar coordinador | Super usuario | IUTEPAS</title>
 </svelte:head>
-<div
-  class="container lg:w-2/3 md:w-3/4 mx-auto px-4 py-8 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
->
-  {#if form?.message}
-    <Toast position="t" />
-  {/if}
-  <div class="p-8 rounded-xl shadow h-full w-1/2">
-    <h2 class="text-2xl font-semibold mb-4 text-center">Añadir Coordinación</h2>
-    <form id="docente-form" method="post" use:enhance={handleSubmit}>
-      <div class="mb-4">
-        <label for="cedula" class="label">Cedula</label>
-        <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
-          <select class="select" bind:value={identidad}>
-            <option value="V">V</option>
-            <option value="E">E</option>
-          </select>
+<section class="min-h-[calc(100vh-80px)] pb-8">
+  <div
+    class="container lg:w-2/3 md:w-3/4 mx-auto px-4 py-8 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
+  >
+    {#if form?.message}
+      <Toast position="t" />
+    {/if}
+    <div class="p-8 rounded-xl shadow h-full w-1/2">
+      <h2 class="text-2xl font-semibold mb-4 text-center">
+        Añadir Coordinación
+      </h2>
+      <form
+        id="docente-form"
+        method="post"
+        use:enhance={handleSubmit}
+        action="?/submit"
+      >
+        <div class="mb-4">
+          <label for="cedula" class="label">Cedula</label>
+          <div
+            class="input-group input-group-divider grid-cols-[auto_1fr_auto]"
+          >
+            <select class="select" bind:value={identidad}>
+              <option value="V">V</option>
+              <option value="E">E</option>
+            </select>
+            <input
+              type="number"
+              bind:value={cedula}
+              min="1000000"
+              id="cedula"
+              class="input (text) py-2 px-7"
+              required
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="nombre" class="label">Nombre</label>
           <input
-            type="number"
-            bind:value={cedula}
-            min="1000000"
-            id="cedula"
+            type="text"
+            id="nombre"
+            name="nombre"
             class="input (text) py-2 px-7"
             required
           />
         </div>
-      </div>
-      <div class="mb-4">
-        <label for="nombre" class="label">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          class="input (text) py-2 px-7"
-          required
-        />
-      </div>
-      <div class="mb-4">
-        <label for="correo" class="label">Correo</label>
-        <input
-          type="email"
-          id="correo"
-          name="correo"
-          bind:value={correo}
-          class="input (text) py-2 px-7"
-          required
-        />
-      </div>
-      <div class="mb-4">
-        <label for="telefono" class="label">Telefono</label>
-        <input
-          type="tel"
-          id="telefono"
-          name="telefono"
-          class="input py-2 px-7"
-          required
-        />
-      </div>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded"
-        >Registrar Coordinador</button
-      >
-    </form>
-  </div>
+        <div class="mb-4">
+          <label for="correo" class="label">Correo</label>
+          <input
+            type="email"
+            id="correo"
+            name="correo"
+            bind:value={correo}
+            class="input (text) py-2 px-7"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label for="telefono" class="label">Telefono</label>
+          <input
+            type="tel"
+            id="telefono"
+            name="telefono"
+            class="input py-2 px-7"
+            required
+          />
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded"
+          >Registrar Coordinador</button
+        >
+      </form>
+    </div>
 
-  <div class="p-8 rounded-xl shadow h-full w-full">
-    <h2 class="text-2xl font-semibold mb-4 text-center">
-      Coordinadores registrados
-    </h2>
-    <Table source={tableSource} />
+    <div class="p-8 rounded-xl shadow h-full w-full">
+      <h2 class="text-2xl font-semibold mb-4 text-center">
+        Coordinadores registrados
+      </h2>
+      <Table source={tableSource} />
+    </div>
   </div>
-</div>
+</section>

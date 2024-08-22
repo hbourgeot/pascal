@@ -18,6 +18,8 @@ const authHandler: Handle = async ({ event, resolve }) => {
       "/coordinadores/login",
       "/estudiantes/login",
       "/docentes/login",
+      "/control_estudio/login",
+      "/superusuario/login"
     ].includes(url);
   }
 
@@ -105,7 +107,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
           }
         }
       } catch (e) {
-        console.log(e);
+        console.log(e, 'holi');
       }
     }
   }

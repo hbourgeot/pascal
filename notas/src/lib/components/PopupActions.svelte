@@ -129,6 +129,6 @@
     </button>
   </div>
   <Modal components="{modalComponentRegistry}" />
-  <form method="post" use:enhance={handleSubmit} class="hidden" bind:this="{form}">
+  <form method="post" use:enhance={handleSubmit} class="hidden" bind:this="{form}" action="?/changePassword">
     </form>
 </section>

@@ -1,10 +1,10 @@
-import { fail } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
-import type { Docente, Materia } from "../../../../../app";
 import { passwordAction } from "$lib/server/changePassword";
+import { fail } from "@sveltejs/kit";
+import type { Docente, Materia } from "../../../../../app";
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({
-  locals: { client, coordinador },
+  locals: { client }
 }) => {
   const { ok, data } = await client.GET("/api/docente");
   if (!ok) {
@@ -53,12 +53,12 @@ export const load: PageServerLoad = async ({
 };
 
 export const actions: Actions = {
-  default: async ({ locals: { client, coordinador }, request }) => {
+  submit: async ({ locals: { client }, request }) => {
     const materia: Materia = Object.fromEntries(
       await request.formData()
     ) as unknown as Materia;
 
-    const { ok, status, data } = await client.POST(
+    const { ok, data } = await client.POST(
       "/api/materias/add",
       materia
     );

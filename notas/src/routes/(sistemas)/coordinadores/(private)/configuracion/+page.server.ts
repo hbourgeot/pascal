@@ -24,7 +24,7 @@ export const load = (async ({ locals: { client, coordinador } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ request, locals: { client } }) => {
+  submit: async ({ request, locals: { client } }) => {
     const obj: any = Object.fromEntries(await request.formData());
 
     const { ok, data } = await client.PUT("/api/config/update/1", obj);

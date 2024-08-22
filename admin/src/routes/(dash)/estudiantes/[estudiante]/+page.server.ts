@@ -5,7 +5,6 @@ import moment from "moment";
 
 export const load = (async ({ locals: { client, user }, params }) => {
   const { ok, data } = await client.GET(`/api/students/${params.estudiante}`);
-  console.log(data);
   
   const { ok: isOk, data: carreraData } = await client.GET("/api/carreras");
   if (!ok && !isOk) {
@@ -25,7 +24,7 @@ export const load = (async ({ locals: { client, user }, params }) => {
         )
     );
 
-  console.log(data);
+    const {data: {admin}} = await client.GET("/api/seguridad/admin")
 
   return {
     estudiante: {
@@ -33,6 +32,7 @@ export const load = (async ({ locals: { client, user }, params }) => {
       fecha_nac: moment(data.fecha_nac).format("DD/MM/YYYY")
     },
     carreras,
+    admin
   };
 }) satisfies PageServerLoad;
 

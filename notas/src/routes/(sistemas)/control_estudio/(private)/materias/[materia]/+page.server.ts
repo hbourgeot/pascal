@@ -12,11 +12,14 @@ export const load = (async ({ params, locals: { controlEstudio, client } }) => {
     id: data.materia.id,
     nombre: data.materia.nombre,
   };
-  return { carrera, estudiantes, materia };
+
+  const {data: {control}} = await client.GET("/api/seguridad/control")
+
+  return { carrera, estudiantes, materia, control };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({
+  submit: async ({
     params,
     cookies,
     request,

@@ -25,6 +25,8 @@ def upload_file():
         ciclo = request.form.get('ciclo', '')
         folder = request.form.get('folder', '')
 
+        print(ciclo)
+        print(file)
         ciclo_path = path.join(PATH_FILES, ciclo)
         create_folder_if_not_exists(ciclo_path)
 
@@ -35,7 +37,7 @@ def upload_file():
 
         # Registrar trazabilidad
         trazabilidad = Trazabilidad(
-            accion=f"Subir archivo: {file.filename} al folder: {folder} y ciclo: {ciclo}",
+            accion=f"Subir archivo: {file.filename} a la carpeta: {folder} y ciclo: {ciclo}",
             usuario=usuario,
             fecha=datetime.now(),
             modulo="Archivos",
@@ -49,7 +51,6 @@ def upload_file():
 
 
 @files.get("/file/<string:name_file>")
-@jwt_required()
 def get_file(name_file):
     claims = get_jwt()
     usuario = claims.get('nombre')
@@ -92,7 +93,7 @@ def download_file(name_file):
 
     # Registrar trazabilidad
     trazabilidad = Trazabilidad(
-        accion=f"Descargar archivo: {name_file} del folder: {folder} y ciclo: {ciclo}",
+        accion=f"Descargar archivo: {name_file} de la carpeta: {folder} y ciclo: {ciclo}",
         usuario=usuario,
         fecha=datetime.now(),
         modulo="Archivos",

@@ -75,6 +75,7 @@
 <svelte:head>
   <title>Editar coordinador | Super usuario | IUTEPAS</title>
 </svelte:head>
+<section class="min-h-[calc(100vh-80px)] pb-8">
 <div
   class="container lg:w-2/3 md:w-3/4 mx-auto px-4 py-8 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
 >
@@ -83,7 +84,7 @@
   {/if}
   <div class="p-8 rounded-xl shadow h-full w-1/2">
     <h2 class="text-2xl font-semibold mb-4 text-center">Editar coordinador</h2>
-    <form id="docente-form" method="post" use:enhance={handleSubmit}>
+    <form id="docente-form" method="post" use:enhance={handleSubmit} action="?/submit">
       <div class="mb-4">
         <label for="cedula" class="label">Cedula</label>
         <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
@@ -149,7 +150,7 @@
       source={tableSource}
       interactive={true}
       on:selected={handleClick}
-      regionBody="capitalize"
     />
   </div>
 </div>
+</section>

@@ -172,19 +172,22 @@ class MateriaModel():
 
                 if estado == "nuevo ingreso" or semestre == 1:
                     cursor.execute(
-                        "SELECT * FROM materias WHERE semestre = '1' AND id_carrera = %s AND ciclo = %s", (carrera, ciclo))
+                        "SELECT * FROM materias WHERE semestre = '1' AND id_carrera = %s AND ciclo = %s AND id_docente IS NOT NULL", (carrera, ciclo))
                     materias = cursor.fetchall()
                     materias_obj = []
                     for materia in materias:
                         materias_obj.append(Materias(
-                            id=materia[0], nombre=materia[1], prelacion=materia[2], unidad_credito=materia[3], hp=materia[4], ht=materia[5], semestre=materia[6], id_carrera=materia[7], id_docente=materia[8], dia=materia[9], hora_inicio=materia[10], hora_fin=materia[11], ciclo=materia[12], modalidad=materia[13], dia2=materia[14], hora_inicio2=materia[15], hora_fin2=materia[16], maximo=materia[17]))
+                            id=materia[0], nombre=materia[1], prelacion=materia[2], unidad_credito=materia[3], hp=materia[4], ht=materia[5], semestre=materia[6], id_carrera=materia[7], id_docente=materia[17], dia=materia[8], hora_inicio=materia[9], hora_fin=materia[10], ciclo=materia[14], modalidad=materia[15], dia2=materia[11], hora_inicio2=materia[12], hora_fin2=materia[13], maximo=materia[16]))
+                        
                     return materias_obj
 
                 else:
                     # Obtenemos todas las materias
                     cursor.execute(
-                        "SELECT * FROM materias WHERE id_carrera = %s AND ciclo = %s", (carrera, ciclo))
+                        "SELECT * FROM materias WHERE id_carrera = %s AND ciclo = %s AND id_docente IS NOT NULL", (carrera, ciclo))
                     materias = cursor.fetchall()
+                    print(materias[0])
+                    print("arriba")
 
                     # Para cada materia, verificamos si el estudiante ha aprobado las materias pre-requisito
                     for materia in materias:
@@ -193,6 +196,7 @@ class MateriaModel():
                                 FROM materias m
                                 WHERE m.id = %s
                                 AND m.id_carrera = %s
+                                AND id_docente IS NOT NULL
                                 AND NOT EXISTS (
                                     SELECT 1
                                     FROM materias_estudiantes me
@@ -205,8 +209,45 @@ class MateriaModel():
 
                         # Si la consulta devuelve un resultado, significa que el estudiante ha aprobado todas las materias pre-requisito
                         if result is not None:
+                            nombre = materia[1]
+                            prelacion = materia[2]
+                            unidad_credito = materia[3]
+                            hp = materia[4]
+                            ht = materia[5]
+                            semestre = materia[6]
+                            id_carrera = materia[7]
+                            id_docente = materia[17]
+                            dia = f"{materia[8]}{', ' + str(materia[11]) if materia[11] is not None else ''}"
+                            hora_inicio = f"{materia[9]}{', ' + str(materia[12]) if materia[11] is not None else ''}"
+                            hora_fin = f"{materia[10]}{', ' + str(materia[13]) if materia[11] is not None else ''}"
+                            ciclo = materia[14]
+                            modalidad = materia[15]
+                            dia2 = materia[11]
+                            hora_inicio2 = materia[12]
+                            hora_fin2 = materia[13]
+                            maximo = materia[16]
+
+                            # Crear la instancia con los valores convertidos correctamente
                             materia_obj = Materias(
-                                id=materia[0], nombre=materia[1], prelacion=materia[2], unidad_credito=materia[3], hp=materia[4], ht=materia[5], semestre=materia[6], id_carrera=materia[7], id_docente=materia[8], dia=f"{materia[9]}{', '+materia[14] if materia[14] is not None else ''}", hora_inicio=f"{materia[10]}{', '+materia[15] if materia[15] is not None else ''}", hora_fin=f"{materia[11]}{', '+materia[16] if materia[16] is not None else ''}", ciclo=materia[12], modalidad=materia[13], dia2=materia[14], hora_inicio2=materia[15], hora_fin2=materia[16], maximo=materia[17])
+                                id=materia[0], 
+                                nombre=nombre, 
+                                prelacion=prelacion, 
+                                unidad_credito=unidad_credito, 
+                                hp=hp, 
+                                ht=ht, 
+                                semestre=semestre, 
+                                id_carrera=id_carrera, 
+                                id_docente=id_docente, 
+                                dia=dia, 
+                                hora_inicio=hora_inicio, 
+                                hora_fin=hora_fin, 
+                                ciclo=ciclo, 
+                                modalidad=modalidad, 
+                                dia2=dia2, 
+                                hora_inicio2=hora_inicio2, 
+                                hora_fin2=hora_fin2, 
+                                maximo=maximo
+                            )
                             cursor.execute("SELECT COUNT(*) FROM materias_estudiantes WHERE cod_materia = %s AND ciclo = %s",
                                            (materia_obj.id, ciclo))
                             row = cursor.fetchone()
@@ -217,6 +258,7 @@ class MateriaModel():
 
             conection.close()
 
+            print(materias_validas)
             return materias_validas
         except Exception as ex:
             raise Exception(ex)

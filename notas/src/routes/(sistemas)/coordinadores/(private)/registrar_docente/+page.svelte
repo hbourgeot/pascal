@@ -110,7 +110,7 @@
   >
     <div class="p-8 w-full max-w-[410px] rounded-xl shadow h-full lg:w-1/2">
       <h2 class="text-2xl font-semibold mb-4 text-center">Añadir Docente</h2>
-      <form id="docente-form" method="post" use:enhance={handleSubmit}>
+      <form id="docente-form" method="post" use:enhance={handleSubmit} action="?/submit">
         <div class="mb-4">
           <label for="cedula" class="label">Cédula</label>
           <div

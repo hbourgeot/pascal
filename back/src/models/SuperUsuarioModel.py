@@ -96,6 +96,9 @@ class SuperUsuarioModel():
                 cursor.execute("SELECT * FROM superusuario WHERE correo=%s",(super_usuario.correo,))
                 row = cursor.fetchone()
                 conection.commit()
+
+                print(super_usuario.correo)
+                print("model")
                 if row is not None:
                     superu = SuperUsuario(row[0], row[1], row[2], row[3])
                 else:
@@ -113,7 +116,7 @@ class SuperUsuarioModel():
         try:
             connection = get_connection()
             with connection.cursor() as cursor:
-                cursor.execute("UPDATE super_usuarios SET password=%s WHERE correo=%s", (new_password, correo))
+                cursor.execute("UPDATE superusuario SET password=%s WHERE correo=%s", (new_password, correo))
                 affected_rows = cursor.rowcount
                 connection.commit()
             connection.close()
@@ -126,7 +129,7 @@ class SuperUsuarioModel():
         try:
             connection = get_connection()
             with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM super_usuarios WHERE correo=%s", (correo,))
+                cursor.execute("SELECT * FROM superusuario WHERE correo=%s", (correo,))
                 row = cursor.fetchone()
                 if row:
                     super_usuario = SuperUsuario(

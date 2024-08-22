@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals: { client } }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ locals: { client }, request }) => {
+  submit: async ({ locals: { client }, request }) => {
     const coordinacion: Coordinacion = Object.fromEntries(
       await request.formData()
     ) as unknown as Docente;

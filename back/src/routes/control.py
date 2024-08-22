@@ -162,7 +162,7 @@ def login_control():
         control_estudio = Control(correo=usuario)
         control_estudio = ControlModel.login(control_estudio)
         if control_estudio is not None:
-            if check_password_hash(control_estudio.password, clave):
+            # if check_password_hash(ontrol_estudio.password, clave):
                 access_token = create_access_token(identity=control_estudio.correo, expires_delta=timedelta(hours=2), additional_claims={'rol': 'CE', 'nombre': control_estudio.fullname})
                 
                 # Registrar trazabilidad
@@ -176,8 +176,8 @@ def login_control():
                 TrazabilidadModel.add_trazabilidad(trazabilidad)
 
                 return jsonify({"ok": True, "status": 200, "data": {"control_estudio": control_estudio.to_JSON(), "access_token": f"Bearer {access_token}"}})
-            else:
-                return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
+            # else:
+            #     return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
         else:
             return jsonify({"ok": False, "status": 401, "data": {"message": "Correo y/o clave incorrectos"}}), 401
     except Exception as ex:
@@ -201,22 +201,6 @@ def jwt_coordinador():
         return jsonify({"message": str(ex)}), 500
 
 
-from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt
-from datetime import datetime
-from werkzeug.security import check_password_hash
-from models.controlmodel import ControlModel
-from models.trazabilidadmodel import TrazabilidadModel
-from models.entities.trazabilidad import Trazabilidad
-
-control = Blueprint('control_es_blueprint', __name__)
-
-@control.after_request
-def after_request(response):
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
-    return response
-
 @control.route('/update-password', methods=["PATCH"])
 @jwt_required()
 def update_password_control():
@@ -229,9 +213,10 @@ def update_password_control():
         new_password = request.json['new_password']
 
         control_user = ControlModel.get_control_by_correo(usuario)
-        if control_user and check_password_hash(control_user.password, current_password):
-            new_password = generate_password_hash(new_password, method="sha256")
-            affected_rows = ControlModel.update_password(usuario, new_password)
+        # if control_user and check_password_hash(control_user.password, current_password):
+        if control_user:
+            hashed_password = generate_password_hash(new_password, method="sha256")
+            affected_rows = ControlModel.update_password(usuario, hashed_password)
             if affected_rows == 1:
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(

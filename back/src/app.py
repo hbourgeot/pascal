@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from settings import settings
 from routes import pagos, students, usuario, docente, carreras, materias, billete, coordinacion, control, peticiones, \
-    config, files,generar,SuperUsuario,transferencia, factura, trazabilidad
+    config, files,generar,SuperUsuario,transferencia, factura, trazabilidad, seguridad
 
 app = Flask(__name__)
 
@@ -30,6 +30,7 @@ def create_app(config_filename):
         app.register_blueprint(transferencia.transf, url_prefix = '/api/transferencias')
         app.register_blueprint(factura.factura_bp, url_prefix = '/api/factura')
         app.register_blueprint(trazabilidad.tr, url_prefix='/api/trazabilidad')
+        app.register_blueprint(seguridad.seg_bp, url_prefix='/api/seguridad')
         # manejador de errores
         app.register_error_handler(404, page_not_found)
         t = 1

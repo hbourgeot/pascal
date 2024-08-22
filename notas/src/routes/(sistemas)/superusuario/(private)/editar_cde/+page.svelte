@@ -90,7 +90,7 @@
       <h2 class="text-2xl font-semibold mb-4 text-center">
         Editar Personal de Control de Estudio
       </h2>
-      <form id="docente-form" method="post" use:enhance={handleSubmit}>
+      <form id="docente-form" method="post" use:enhance={handleSubmit} action="?/submit">
         <div class="mb-4">
           <label for="cedula" class="label">Cedula</label>
           <div
@@ -168,7 +168,6 @@
       <Table
         source={tableSource}
         interactive={true}
-        regionBody="capitalize"
         on:selected={handleClick}
       />
     </div>

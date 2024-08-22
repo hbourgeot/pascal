@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
-
+import traceback
 superUs = Blueprint('superUsuario_Blueprint', __name__)
 
 @superUs.after_request
@@ -166,6 +166,9 @@ def login_super_usuario():
 def jwt_super():
     try:
         correo_super = get_jwt_identity()
+        claims = get_jwt()
+        rol = claims.get('rol')
+        print(rol)
         super_entity: SuperUsuario | None
         
         if correo_super is not None:
@@ -173,18 +176,10 @@ def jwt_super():
             super_entity = SuperUsuarioModel.login(super_entity)
             
             if super_entity is not None:
-                # Registrar trazabilidad
-                trazabilidad = Trazabilidad(
-                    accion=f"Refrescar sesión del super usuario con cédula: {super_entity.cedula}",
-                    usuario=super_entity.nombre,
-                    fecha=datetime.now(),
-                    modulo="Autenticacion",
-                    nivel_alerta=1
-                )
-                TrazabilidadModel.add_trazabilidad(trazabilidad)
 
                 return jsonify({"ok": True, "status": 200, "data": super_entity.to_JSON()})
             else:
+                print(super_entity)
                 return jsonify({"ok": False, "status": 401, "data": {"message": "no autorizado"}}), 401
     except Exception as ex:
         print(ex)
@@ -223,4 +218,5 @@ def update_password_super_usuario():
         else:
             return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
     except Exception as ex:
+        traceback.print_exc()
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500

@@ -16,12 +16,15 @@ export const load = (async ({ locals: { estudiante, client }, cookies }) => {
   const {
     data: { carreras },
   } = await client.GET("/api/carreras");
+
   const carrera: { id: string; nombre: string } = carreras.find(
     (carrera: { id: string; nombre: string }) =>
       carrera.id == estudiante.carrera
   );
 
-  if (!ok) return { estudiante, materias: [] };
+  console.log(carrera, ok, data)
+
+  if (!ok) return { estudiante, materias: [], carrera, ciclo: data.ciclo };
 
   return {
     estudiante,

@@ -123,14 +123,21 @@
   };
 
   const handleSubmit: SubmitFunction = ({ formData }) => {
-    formData.append("dia", diasDeClase[0].value);
+    if (diasDeClase[0]){
+      formData.append("dia", diasDeClase[0].value);
+    }
 
-    formData.append(
-      "hora_inicio",
-      moment(horaInicio, "hh:mm A").format("hh:mm A")
-    );
+    if (horaInicio) {
+      formData.append(
+        "hora_inicio",
+        moment(horaInicio, "hh:mm A").format("hh:mm A")
+      );
+    }
 
-    formData.append("hora_fin", moment(horaFin, "hh:mm A").format("hh:mm A"));
+    if (horaFin) {
+      formData.append("hora_fin", moment(horaFin, "hh:mm A").format("hh:mm A"));
+    }
+
     if (diasDeClase[1]) {
       formData.append("dia2", diasDeClase[1].value);
       formData.append(
@@ -153,7 +160,12 @@
 >
   <div class="bg-white p-8 rounded-2xl shadow">
     <h2 class="text-2xl font-semibold mb-4">Registrar Materia</h2>
-    <form id="docente-form" method="post" use:enhance={handleSubmit}>
+    <form
+      id="docente-form"
+      method="post"
+      use:enhance={handleSubmit}
+      action="?/submit"
+    >
       <div class="flex justify-between items-end gap-4">
         <div class="mb-4">
           <label for="id" class="label">Código de Materia</label>
@@ -294,8 +306,6 @@
               name="id_docente"
               id="docente"
               class="select py-2 px-7 outline-none"
-              value={docentesSelect[0].cedula}
-              required
             >
               {#each docentesSelect as docente}
                 <option value={docente.cedula}>{docente.nombre}</option>
@@ -315,7 +325,6 @@
             id="dia"
             {name}
             placeholder="Seleccione"
-            required
             on:change={cambioDiaClase}
             on:clear={() => {
               showExtraDays = false;
@@ -337,7 +346,6 @@
             id="modalidad"
             class="select py-2 px-7"
             value={0}
-            required
           >
             <option value="Presencial">Presencial</option>
             <option value="Virtual">Virtual</option>

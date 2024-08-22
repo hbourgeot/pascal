@@ -53,7 +53,7 @@ def login():
 
         if user:
             if check_password_hash(user.clave, clave):
-                access_token = create_access_token(identity=user.usuario, expires_delta=timedelta(hours=2), additional_claims={'rol': 'S'})
+                access_token = create_access_token(identity=user.usuario, expires_delta=timedelta(hours=2), additional_claims={'rol': 'S',  "nombre": user.nombre})
                 
                 # Registrar trazabilidad
                 trazabilidad = Trazabilidad(
@@ -85,14 +85,6 @@ def jwt_student():
             user = UserModel.login(usuario_entity)  # revisamos la bd
             if user is not None:
                 # Registrar trazabilidad
-                trazabilidad = Trazabilidad(
-                    accion=f"Refrescar sesión del usuario: {usuario}",
-                    usuario=usuario,
-                    fecha=datetime.now(),
-                    modulo="Autenticacion",
-                    nivel_alerta=1
-                )
-                TrazabilidadModel.add_trazabilidad(trazabilidad)
 
                 return jsonify({"ok": True, "status": 200, "data": user.to_JSON()})
             else:

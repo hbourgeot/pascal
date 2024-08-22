@@ -158,7 +158,7 @@
         valueAttr: {
           type: "password",
           minlength: 3,
-          maxlength: 10,
+          maxlength: 20,
           required: true,
         },
         buttonTextSubmit: "Enviar",
@@ -173,7 +173,8 @@
       return cancel();
     }
 
-    if (response != "1234") {
+    console.log(data.control, response)
+    if (response != data.control) {
       triggerToast("Clave inválida, intente de nuevo");
       return cancel();
     }
@@ -242,6 +243,7 @@
     <form
       use:enhance={handleSubmit}
       method="post"
+      action="?/submit"
       class="flex mt-16 flex-wrap justify-around w-[80%] mx-auto h-auto border rounded-2xl border-dark-100 bg-white"
     >
       <h3 class="w-full pt-4 pl-8 text-black pb-4 text-2xl">

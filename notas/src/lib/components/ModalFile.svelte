@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { triggerToast } from "$lib/utils/toast";
+
   // Props
   /** Exposes parent props to this component. */
   export let parent: any;
@@ -18,7 +20,24 @@
   }
 
   $: if (theFiles) {
-    if (theFiles[0].type != "application/pdf") theFiles = null;
+    console.log(theFiles[0]);
+    if (theFiles[0]?.type !== "application/pdf") theFiles = null;
+  }
+
+  function handleFileChange() {
+    const maxSize = 3 * 1024 * 1024; // 3MB
+    if (theFiles !== null) {
+      const validFiles = [];
+      for (let file of theFiles) {
+        if (file.size > maxSize) {
+          triggerToast("El archivo es demasiado grande. Máximo 3MB", 2000);
+        } else {
+          validFiles.push(file);
+        }
+      }
+
+      theFiles = validFiles as unknown as FileList;
+    }
   }
 
   // Base Classes
@@ -37,7 +56,12 @@
     <article>{$modalStore[0].body ?? "(body missing)"}</article>
     <!-- Enable for debugging: -->
     <form class="modal-form {cForm}">
-      <FileDropzone name="files" bind:files={theFiles} accept=".pdf">
+      <FileDropzone
+        name="files"
+        bind:files={theFiles}
+        accept=".pdf"
+        on:change={handleFileChange}
+      >
         <svelte:fragment slot="lead">
           {#if !theFiles}
             <Icon
@@ -47,7 +71,9 @@
             />
           {:else}
             <p class="rounded-2xl p-2 bg-secondary-200">
-              {theFiles.item(0)?.name}
+              {#each theFiles as file}
+                {file.name}
+              {/each}
             </p>
           {/if}
         </svelte:fragment>

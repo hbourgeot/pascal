@@ -5,6 +5,9 @@ from models.trazabilidadmodel import TrazabilidadModel
 from models.entities.trazabilidad import Trazabilidad
 from flask_jwt_extended import jwt_required, get_jwt
 from datetime import datetime
+import traceback
+
+# no se q hago, pero luzco bien haciendolo :*
 
 carrera = Blueprint('carrera_blueprint', __name__)
 
@@ -34,6 +37,7 @@ def get_carreras():
 
         return jsonify({"ok": True, "status": 200, "data": carreras})
     except Exception as ex:
+        traceback.print_exc()
         return jsonify({"message": str(ex)}), 500
 
 @carrera.route('/<id>')

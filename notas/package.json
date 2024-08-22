@@ -3,7 +3,7 @@
   "version": "0.5.1",
   "scripts": {
     "dev": "vite dev",
-    "build": "NODE_OPTIONS=--max_old_space_size=1434 vite build",
+    "build": "vite build",
     "start": "HOST=http://localhost:3000 node ./build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

@@ -38,7 +38,6 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
     }));
 
   const {
-    ok: isOk,
     data: { carreras },
   } = await client.GET("/api/carreras");
 
@@ -58,7 +57,7 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ locals: { client }, request }) => {
+  submit: async ({ locals: { client }, request }) => {
     const materia: any = Object.fromEntries(await request.formData());
     console.log(materia);
 

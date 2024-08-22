@@ -110,9 +110,9 @@ def add_materia():
         semestre = request.json['semestre']
         id_carrera = request.json['id_carrera']
         id_docente = request.json['id_docente']
-        dia = request.json['dia']
-        hora_inicio = request.json['hora_inicio']
-        hora_fin = request.json['hora_fin']
+        dia = request.json.get('dia', None)
+        hora_inicio = request.json.get('hora_inicio', None)
+        hora_fin = request.json.get('hora_fin', None)
         dia2 = request.json.get('dia2', None)
         hora_inicio2 = request.json.get('hora_inicio2', None)
         hora_fin2 = request.json.get('hora_fin2', None)

@@ -19,7 +19,7 @@
   $: if (browser) {
     try {
       promedioSemestre =
-        notas.map((nota) => nota.promedio).reduce((a, b) => a + b) /
+        notas.map((nota) => nota.promedio).reduce((a, b) => parseInt(a) + parseInt(b)) /
         notas.length;
     } catch (e) {
       console.error(e);
