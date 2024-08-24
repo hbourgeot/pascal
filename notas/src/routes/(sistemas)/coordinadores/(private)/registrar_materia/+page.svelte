@@ -79,6 +79,7 @@
     },
   };
   $: listMaterias = data.list.filter((mat: Materia) => mat.semestre < semestre);
+  $: console.log(listMaterias)
   $: modalComponentRegistry = {
     // Custom Modal 1
     modalList: {
@@ -156,7 +157,7 @@
 </script>
 
 <div
-  class="container flex flex-col justify-center items-center lg:w-1/2 md:w-2/3 mx-auto px-4 py-8 screen"
+  class="container flex flex-col justify-center items-center lg:w-2/3 md:w-3/4 mx-auto px-4 py-8 screen"
 >
   <div class="bg-white p-8 rounded-2xl shadow">
     <h2 class="text-2xl font-semibold mb-4">Registrar Materia</h2>
@@ -212,6 +213,7 @@
               value="1"
               required
             >
+              <option value="0">0 U.C</option>
               <option value="1">1 U.C</option>
               <option value="2">2 U.C</option>
               <option value="3">3 U.C</option>
@@ -231,6 +233,7 @@
               name="hp"
               required
             >
+              <option value="0">0h</option>
               <option value="1">1h</option>
               <option value="2">2h</option>
               <option value="3">3h</option>
@@ -250,6 +253,7 @@
               name="ht"
               required
             >
+              <option value="0">0h</option>
               <option value="1">1h</option>
               <option value="2">2h</option>
               <option value="3">3h</option>

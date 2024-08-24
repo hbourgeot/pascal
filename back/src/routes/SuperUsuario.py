@@ -42,12 +42,8 @@ def get_Super(cedula):
         return jsonify({"message": str(ex)}), 500
 
 @superUs.route('/add', methods=["POST"])
-@jwt_required()
 def add_Super():
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
-
         cedula = request.json['cedula']
         nombre = request.json['nombre']
         correo = request.json['correo']
@@ -57,16 +53,6 @@ def add_Super():
         affected_rows = SuperUsuarioModel.add_super_user(superUs)
 
         if affected_rows == 1:
-            # Registrar trazabilidad
-            trazabilidad = Trazabilidad(
-                accion=f"Añadir super usuario con cédula: {cedula}, nombre: {nombre}",
-                usuario=usuario,
-                fecha=datetime.now(),
-                modulo="Supervisión",
-                nivel_alerta=2
-            )
-            TrazabilidadModel.add_trazabilidad(trazabilidad)
-
             return jsonify({"ok": True, "status": 200, "data": None})
         else:
             return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500

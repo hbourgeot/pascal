@@ -178,12 +178,17 @@
   };
 
   const handleSubmit: SubmitFunction = ({ formData }) => {
-    formData.append(
+    if(horaInicio){
+      formData.append(
       "hora_inicio",
       moment(horaInicio, "hh:mm A").format("hh:mm A")
     );
+    }
 
-    formData.append("hora_fin", moment(horaFin, "hh:mm A").format("hh:mm A"));
+    if(horaFin){
+      formData.append("hora_fin", moment(horaFin, "hh:mm A").format("hh:mm A"));
+    }
+
     if (materia.dia2) {
       formData.append(
         "hora_inicio2",
@@ -198,7 +203,6 @@
       disabled = true;
       window.location.reload();
       await update({ reset: true });
-      //
     };
   };
 
@@ -304,6 +308,7 @@
                 required
                 {disabled}
               >
+              <option value="{0}">0 U.C</option>
                 <option value="{1}">1 U.C</option>
                 <option value="{2}">2 U.C</option>
                 <option value="{3}">3 U.C</option>
@@ -327,7 +332,8 @@
                 required
                 {disabled}
               >
-                <option value="{1}">1h</option>
+              <option value="{0}">0h</option>
+              <option value="{1}">1h</option>
                 <option value="{2}">2h</option>
                 <option value="{3}">3h</option>
                 <option value="{4}">4h</option>
@@ -350,6 +356,7 @@
                 required
                 {disabled}
               >
+              <option value="{0}">0h</option>
                 <option value="{1}">1h</option>
                 <option value="{2}">2h</option>
                 <option value="{3}">3h</option>

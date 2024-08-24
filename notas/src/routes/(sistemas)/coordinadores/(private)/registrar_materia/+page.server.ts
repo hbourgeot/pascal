@@ -43,7 +43,6 @@ export const load: PageServerLoad = async ({
     data: { carreras },
   } = await client.GET("/api/carreras");
 
-  console.log(materiasAutocomplete);
   return {
     docentes,
     materias,
