@@ -6,7 +6,7 @@ import { passwordAction } from "$lib/server/changePassword";
 export const load = (async ({ locals: { client, coordinador, config } }) => {
   const { ok, data } = await client.GET("/api/docente");
   if (!ok) {
-    return { docentes: [], materias: [], autocom: [] };
+    return { docentes: [], materias: [], autocom: [], carreras: [], tableMaterias: [], list: [] };
   }
 
   let docentes: Docente[] = data.docente
@@ -19,9 +19,9 @@ export const load = (async ({ locals: { client, coordinador, config } }) => {
         index === self.findIndex((t: Docente) => t.cedula === docente.cedula)
     );
 
-  const { ok: okey, data: dataMat } = await client.GET("/api/materias");
+  const { ok: okey, data: dataMat }: {ok: boolean, data: {materias: Materia[]}} = await client.GET("/api/materias");
   if (!okey) {
-    return { docentes: docentes, materias: [], autocom: [] };
+    return { docentes: docentes, materias: [], autocom: [], carreras: [], tableMaterias: [], list: [] };
   }
 
   const materias: string[] = dataMat.materias
