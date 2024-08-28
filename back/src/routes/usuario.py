@@ -67,9 +67,9 @@ def login():
 
                 return jsonify({"ok": True, "status": 200, "data": {"usuario": user.to_JSON(), "access_token": f"Bearer {access_token}"}})
             else:
-                return jsonify({"ok": False, "status": 401, "data": {"message": 'Correo y/o contraseña inválidos'}}), 401
+                return jsonify({"ok": False, "status": 401, "data": {"message": 'Correo y/o contraseña inválidoss'}}), 401
         else:
-            return jsonify({"ok": False, "status": 401, "data": {"message": 'Correo y/o contraseña inválidos'}}), 401
+            return jsonify({"ok": False, "status": 401, "data": {"message": 'Correo y/o contraseña inválidosss'}}), 401
     except Exception as ex:
         traceback.print_exc()
         return jsonify({"ok": False, "status": 500, "data": {"message": 'Correo y/o contraseña inválidos'}}), 401
