@@ -275,9 +275,9 @@ class MateriaModel():
                     """
                     UPDATE materias_estudiantes
                     SET {campo} = %s
-                    WHERE cedula_estudiante = %s
+                    WHERE cedula_estudiante = %s AND cod_materia = %s
                     """.format(campo=nombre_campo),
-                    (valor, cedula_estudiante)
+                    (valor, cedula_estudiante, cod_materia)
                 )
                 affected_rows = cursor.rowcount
 
