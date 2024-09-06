@@ -33,7 +33,7 @@
   let horaFin2: any = null;
   let semestre = 1;
 
-  $: if (materiasIDs.length > 0) {
+  $: if (materiasIDs?.length > 0) {
     prelacion = materiasIDs.join(" - ");
   }
 

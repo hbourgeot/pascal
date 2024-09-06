@@ -51,6 +51,7 @@ export const load: PageServerLoad = async ({
   }
 
   let materias: Materia[] = data.materias;
+  console.log(materias);
 
   const {
     ok: okey,
@@ -65,7 +66,7 @@ export const load: PageServerLoad = async ({
 
   materias = materias.map((mat) => ({
     ...mat,
-    disponible: mat?.cantidad_estudiantes !== mat?.maximo,
+    disponible: (mat?.cantidad_estudiantes ?? 0) <= mat?.maximo,
     docente: docentes.find((doc: Docente) => doc.cedula == mat.id_docente)
       ?.nombre,
   }));

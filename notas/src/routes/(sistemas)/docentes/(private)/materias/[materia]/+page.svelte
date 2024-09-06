@@ -183,9 +183,7 @@
         modalStore.trigger(modal);
       });
 
-      myFile = myFile.item(0);
-
-      myFile = myFile; // Force Svelte
+      myFile = myFile[0];
       uploadForm.requestSubmit();
 
       triggerToast("Planificacion cargada exitosamente");

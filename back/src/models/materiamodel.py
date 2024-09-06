@@ -176,9 +176,16 @@ class MateriaModel():
                     materias = cursor.fetchall()
                     materias_obj = []
                     for materia in materias:
-                        materias_obj.append(Materias(
-                            id=materia[0], nombre=materia[1], prelacion=materia[2], unidad_credito=materia[3], hp=materia[4], ht=materia[5], semestre=materia[6], id_carrera=materia[7], id_docente=materia[17], dia=materia[8], hora_inicio=materia[9], hora_fin=materia[10], ciclo=materia[14], modalidad=materia[15], dia2=materia[11], hora_inicio2=materia[12], hora_fin2=materia[13], maximo=materia[16]))
+                        mat = Materias(
+                            id=materia[0], nombre=materia[1], prelacion=materia[2], unidad_credito=materia[3], hp=materia[4], ht=materia[5], semestre=materia[6], id_carrera=materia[7], id_docente=materia[17], dia=materia[8], hora_inicio=materia[9], hora_fin=materia[10], ciclo=materia[14], modalidad=materia[15], dia2=materia[11], hora_inicio2=materia[12], hora_fin2=materia[13], maximo=materia[16])
                         
+                        cursor.execute("SELECT COUNT(*) FROM materias_estudiantes WHERE cod_materia = %s AND ciclo = %s",
+                                           (mat.id, ciclo))
+                        row = cursor.fetchone()
+                        # Creamos un nuevo objeto de la clase Materias y lo agregamos a la lista
+                        if row:
+                            mat.cantidad_estudiantes = row[0]
+                        materias_obj.append(mat)
                     return materias_obj
 
                 else:
