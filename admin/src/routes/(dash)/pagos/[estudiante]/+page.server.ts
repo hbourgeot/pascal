@@ -7,7 +7,7 @@ export const load = (async ({locals:{client, user}, params, url}) => {
     const { ok: okC, data: config } = await client.GET("/api/config/1")
     const tipo = url.searchParams.get("tipo");
     if (!ok || !okey || !okC) {
-        return {}
+        return {estudiante: null, pagos: []};
     }
     let pagosEstudiante =
       tipo === "todos"

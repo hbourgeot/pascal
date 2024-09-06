@@ -12,6 +12,8 @@
     value: materia.id,
     label: `${materia.id} - ${materia.nombre}`,
     disabled: !materia.disponible,
+    //@ts-ignore
+    motivo: materia?.motivo ?? (materia?.cantidad_estudiantes === mat?.maximo ? "Aula llena" : materia?.dia === null ? "Sin horario" : ""),
   }));
 
   let selected: string[] = [];
@@ -58,9 +60,14 @@
         <ListBoxItem
           bind:group={selected}
           name={materia.value}
-          class={materia.disabled ? "line-through !cursor-not-allowed" : ""}
-          value={materia.value}>{materia.label}</ListBoxItem
-        >
+          value={materia.value}>
+          {#if materia.disabled}
+            <span class="line-through !cursor-not-allowed !w-full flex" title={materia.motivo}
+            >{materia.label}</span>
+          {:else}
+            {materia.label}
+          {/if}
+          </ListBoxItem>
       {/each}
     </ListBox>
     <!-- prettier-ignore -->

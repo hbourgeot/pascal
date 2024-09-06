@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 </script>
 
 <main class="w-full main-element" data-theme="modern">

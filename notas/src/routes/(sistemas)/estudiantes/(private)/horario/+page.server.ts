@@ -66,12 +66,11 @@ export const load: PageServerLoad = async ({
 
   materias = materias.map((mat) => ({
     ...mat,
-    disponible: (mat?.cantidad_estudiantes ?? 0) <= mat?.maximo,
+    disponible: mat?.cantidad_estudiantes !== mat?.maximo && mat?.dia !== null,
     docente: docentes.find((doc: Docente) => doc.cedula == mat.id_docente)
       ?.nombre,
+    motivo: mat?.cantidad_estudiantes === mat?.maximo ? "Lleno" : mat?.dia === null ? "Sin horario" : "",
   }));
-
-  console.log(materias)
 
   return {
     materias: materias,

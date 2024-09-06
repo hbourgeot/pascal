@@ -7,23 +7,26 @@ export const load = (async ({locals:{client}, params}) => {
         if (status == 404) {
             throw redirect(300, "/pagos")
         }
-        return {}
+        return {pago: {}, billetes: [], estudiante: {}};
     }
 
     console.log(data);
     let billetes = []
     if (data.metodo_pago.nombre === "Efectivo") {
-        const { ok, data } = await client.GET("/api/billetes")
+        const { ok, data: dataBilletes } = await client.GET("/api/billetes")
         if (!ok) {
-            return {}
+            return {pago: data, billetes: [], estudiante: {}};
         }
 
-        billetes = data.filter((bill: any) => bill.pago == params.pago)
+        console.log(dataBilletes) ;
+        billetes = dataBilletes.filter((bill: any) => bill.pago == params.pago)
     }
 
     const { ok: oke, data: estudiante } = await client.GET(`/api/students/${params.estudiante}`)
     if (!oke) {
-        return {}
+        return {pago: data, billetes, estudiante: {}};
     }
+
+    console.log(billetes);
     return {pago: data, billetes, estudiante};
 }) satisfies PageServerLoad;

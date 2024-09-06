@@ -84,7 +84,7 @@ def add_student():
         edad = request.json['edad']
         sexo = request.json['sexo']
         direccion = request.json['direccion']
-        fecha_nac = request.json['fecha_nac']
+        fecha_nac = datetime.strptime(request.json['fecha_nac'], "%d-%m-%Y")
 
         student = Student(str(cedula), fullname, correo, telefono, semestre, password, estado, carrera, edad, sexo, 0, direccion, fecha_nac)
         affected_rows = StudentModel.add_student(student)
@@ -122,7 +122,7 @@ def update_student(cedula):
         edad = request.json['edad']
         sexo = request.json['sexo']
         direccion = request.json['direccion']
-        fecha_nac = request.json['fecha_nac']
+        fecha_nac = datetime.strptime(request.json['fecha_nac'], "%d-%m-%Y")
 
         student = Student(str(cedula), fullname, correo, telefono, semestre, None, estado, carrera, edad, sexo, 0, direccion, fecha_nac)
         affected_rows = StudentModel.update_student(student)
@@ -293,7 +293,9 @@ def login_estudiante():
         estudiante = Student(correo=usuario)
         estudiante = StudentModel.login(estudiante)
         if estudiante is not None:
-            if check_password_hash(estudiante.password, clave):
+            if estudiante.estado == "abandonó":
+                return jsonify({"ok": False, "status": 401, "data": {"message": "Por favor, dirígete a tu centro de estudios"}}), 401
+            elif check_password_hash(estudiante.password, clave):
                 # Validar pagos
                 pagos: list[Pago] = StudentModel.get_pago_by_student(estudiante.cedula)
                 config = ConfigModel.get_configuracion("1")

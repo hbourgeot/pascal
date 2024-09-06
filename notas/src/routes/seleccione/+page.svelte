@@ -1,17 +1,13 @@
-<script lang="ts">
-  import { ChevronLeft, Lock, User } from "@steeze-ui/tabler-icons";
-  import { Icon } from "@steeze-ui/svelte-icon";
+<script>
   import Pascal from "$lib/images/pascalConFondo.png";
-  import { enhance } from "$app/forms";
-  import { Toast, toastStore } from "@skeletonlabs/skeleton";
+  import { Icon } from "@steeze-ui/svelte-icon";
+  import { ChevronLeft } from "@steeze-ui/tabler-icons";
 
-  let y: number;
 </script>
 
 <svelte:head>
   <title>Inicio de Sesión | Estudiantes | IUTEPAS</title>
 </svelte:head>
-<svelte:window bind:innerHeight={y} />
 <a href="/" class="btn variant-ghost-primary absolute top-3 left-3"
   ><Icon src={ChevronLeft} class="h-5 w-5 mr-1" /> Volver al inicio</a
 >

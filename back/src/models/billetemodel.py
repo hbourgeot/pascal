@@ -16,7 +16,7 @@ class BilleteModel():
                     result = cursor.fetchall()
 
                     for row in result: 
-                        billete = Billete(row[3],row[0], row[1], row[2])
+                        billete = Billete(row[0],row[1], row[2], row[3])
                         billetes.append(billete.to_JSON())
                         
                 
