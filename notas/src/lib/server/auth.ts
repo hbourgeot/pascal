@@ -1,5 +1,5 @@
 import { baseURL } from "$env/static/private";
-import { error, redirect, type RequestEvent } from "@sveltejs/kit";
+import { error, fail, redirect, type RequestEvent } from "@sveltejs/kit";
 import type { Coordinacion, Docente, Estudiante } from "../../app";
 
 export const logInStudent = async (
@@ -127,10 +127,12 @@ export const getUser = async (token: string, endpoint: string) => {
 
     const { data: user } = await res.json();
 
-
+    if(user?.message === "no autorizado") {
+      throw fail(401, {message: "no autorizado"})
+    }
     return user;
   } catch (error) {
-    console.error(error);
+    console.error(error);      
   }
 };
 

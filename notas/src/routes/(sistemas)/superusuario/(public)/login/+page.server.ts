@@ -3,8 +3,7 @@ import type { PageServerLoad, Actions } from "./$types";
 import { logInSuperUsuario } from "$lib/server/auth";
 
 export const load = (async ({ locals: { superUsuario } }) => {
-  if (superUsuario && superUsuario?.message === undefined) {
-    console.log("yuju")
+  if (superUsuario) {
     throw redirect(302, "/superusuario");
   }
 
