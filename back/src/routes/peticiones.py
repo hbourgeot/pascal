@@ -122,11 +122,8 @@ def add_peticion():
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @peticion.route('/update/<id>', methods=["PATCH"])
-@jwt_required()
 def update_peticion(id):
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
         data = request.json
 
         # Definimos una lista de campos permitidos para actualizar.
@@ -147,16 +144,6 @@ def update_peticion(id):
         affected_rows = PeticionesModel.update_peticion(peticion)
 
         if affected_rows == 1:
-            # Registrar trazabilidad
-            trazabilidad = Trazabilidad(
-                accion=f"Actualizar Petición con id: {id}",
-                usuario=usuario,
-                fecha=datetime.now(),
-                modulo="Peticiones",
-                nivel_alerta=2
-            )
-            TrazabilidadModel.add_trazabilidad(trazabilidad)
-
             return jsonify({"ok": True, "status": 200, "data": None})
         else:
             return jsonify({"ok": False, "status": 500, "data": {"message": affected_rows}}), 500

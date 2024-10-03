@@ -8,6 +8,7 @@ export const POST: RequestHandler = async ({ locals: { client }, request }) => {
     `/api/peticiones/update/${obj.peticion}`,
     { estado: "Denegado Terminado" }
   );
+  console.log(dataPeticion)
   if (!okPeticion) return json({ message: dataPeticion.message, status: 400 });
 
   return json({ message: "Modificado!" });

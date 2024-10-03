@@ -179,12 +179,8 @@ def delete_docente(cedula):
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
 
 @doc.route("/upload", methods=["PATCH"])
-@jwt_required()
 def modificar_materia_estudiante():
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
-
         cedula_estudiante = request.json.get('cedula_estudiante')
         nombre_campo = request.json.get('nombre_campo')
         valor = request.json.get('valor')
@@ -195,7 +191,7 @@ def modificar_materia_estudiante():
         # Registrar trazabilidad
         trazabilidad = Trazabilidad(
             accion=f"Modificar materia del estudiante con cédula: {cedula_estudiante}, campo: {nombre_campo}, valor: {valor}",
-            usuario=usuario,
+            usuario=materia,
             fecha=datetime.now(),
             modulo="Materias",
             nivel_alerta=2

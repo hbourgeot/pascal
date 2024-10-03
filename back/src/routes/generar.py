@@ -22,11 +22,8 @@ def after_request(response):
 BINPATH = os.getenv('BINPATH', 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
 
 @generar_pdf.route('/<cedula>')
-@jwt_required()
 def generar(cedula):
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
         student = StudentModel.get_student(cedula)
         if student is not None:
             notas = StudentModel.get_materias_inscritas(cedula)
@@ -39,16 +36,6 @@ def generar(cedula):
             pdf = pdfkit.from_string(res, configuration=config, options={"enable-local-file-access": True})
             pdf_blob = io.BytesIO(pdf)
 
-            # Registrar trazabilidad
-            trazabilidad = Trazabilidad(
-                accion=f"Generar PDF de estudiante con cédula: {cedula}",
-                usuario=usuario,
-                fecha=datetime.now(),
-                modulo="Generar PDF",
-                nivel_alerta=1
-            )
-            TrazabilidadModel.add_trazabilidad(trazabilidad)
-
             return send_file(path_or_file=pdf_blob, download_name="ficha_estudiantil.pdf", as_attachment=True)
         else:
             return jsonify({"ok": False, "status": 404, "data": {"message": "Estudiante no encontrado"}}), 404
@@ -57,11 +44,8 @@ def generar(cedula):
         return jsonify({"message": str(ex)}), 500
 
 @generar_pdf.route('/docenteria')
-@jwt_required()
 def docenteria():
     try:
-        claims = get_jwt()
-        usuario = claims.get('nombre')
         join = MateriaModel.get_docenteria()
         if join is not None:
             config = pdfkit.configuration(wkhtmltopdf=BINPATH)
@@ -69,16 +53,6 @@ def docenteria():
             res = render_template('docenteria.html', materias=join, fecha_actual=fecha_actual)
             pdf = pdfkit.from_string(res, configuration=config, options={"enable-local-file-access": True})
             pdf_blob = io.BytesIO(pdf)
-
-            # Registrar trazabilidad
-            trazabilidad = Trazabilidad(
-                accion="Generar PDF de docenteria",
-                usuario=usuario,
-                fecha=datetime.now(),
-                modulo="Generar PDF",
-                nivel_alerta=1
-            )
-            TrazabilidadModel.add_trazabilidad(trazabilidad)
 
             return send_file(path_or_file=pdf_blob, download_name="docentes_materias.pdf", as_attachment=True)
         else:
