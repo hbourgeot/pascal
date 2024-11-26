@@ -281,3 +281,40 @@ def update_password():
             return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
     except Exception as ex:
         return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+    
+
+@doc.route('/reiniciar/<correo>', methods = ['POST'])
+@jwt_required()
+def reiniciar_clave(correo):
+    try:
+        correo_coord = get_jwt_identity()
+        claims = get_jwt()
+        nombre = claims.get('nombre')
+        docente: Docente | None
+        if correo is not None:
+            docente = DocenteModel.get_docente_by_correo(correo)
+            if docente != None:
+                cedula = docente.cedula.split('-')[1]
+                new_password = generate_password_hash(cedula, method="sha256")
+                affected_rows = DocenteModel.update_password(correo, new_password)
+                if affected_rows == 1:
+                    # Registrar trazabilidad
+                    trazabilidad = Trazabilidad(
+                        accion=f"Reiniciar contraseña del docente: {docente.fullname}",
+                        usuario=correo_coord,
+                        fecha=datetime.now(),
+                        modulo="Docentes",
+                        nivel_alerta=2
+                    )
+                    TrazabilidadModel.add_trazabilidad(trazabilidad)
+
+                    return jsonify({"ok": True, "status": 200, "data": "Contraseña reiniciada exitosamente"})
+            else:
+                return jsonify({"ok": False, "status": 500, "data": "Error al reiniciar la contraseña"}), 500
+        else:
+            return jsonify({"ok": False, "status": 401, "data": "Contraseña actual incorrecta"}), 401
+    except Exception as ex:
+        print(ex)
+        return jsonify({"ok": False, "status": 500, "data": {"message": str(ex)}}), 500
+
+            

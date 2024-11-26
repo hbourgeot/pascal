@@ -39,6 +39,16 @@ export const actions: Actions = {
 
     return { message: "Docente creado!" };
   },
+  reiniciar: async ({locals:{client, coordinador}, request}) => {
+    const {docente}: {docente: string} = Object.fromEntries(await request.formData()) as unknown as {docente: string};
+
+    const {ok, status, data} = await client.POST(`/api/docente/reiniciar/${docente}`);
+    if (!ok) {
+      return fail(400, data);
+    }
+
+    return { message: "Clave reiniciada exitosamente"};
+  },
 
   ...passwordAction
 };

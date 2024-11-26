@@ -1,14 +1,22 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { PaginationSettings, TableSource } from "@skeletonlabs/skeleton";
-  import { Paginator, tableMapperValues, Table } from "@skeletonlabs/skeleton";
+  import type {
+    PaginationSettings,
+    TableSource,
+    ModalSettings,
+  } from "@skeletonlabs/skeleton";
+  import {
+    Paginator,
+    tableMapperValues,
+    Table,
+    modalStore,
+  } from "@skeletonlabs/skeleton";
   import type { ActionData, PageData } from "./$types";
   import type { SubmitFunction } from "@sveltejs/kit";
   import type { Docente } from "../../../../../app";
   import { triggerToast } from "$lib/utils/toast";
-  import { invalidateAll } from "$app/navigation";
   import { Icon } from "@steeze-ui/svelte-icon";
-  import { FileDownload } from "@steeze-ui/tabler-icons";
+  import { FileDownload, LockAccess } from "@steeze-ui/tabler-icons";
 
   export let form: ActionData;
   export let data: PageData;
@@ -16,6 +24,8 @@
   let cedula: number;
   let cedulaIdentidad = "";
   let correo = "";
+  let reiniciarForm: HTMLFormElement | null = null;
+  let reiniciarCorreo: string | null = null;
 
   $: cedulaIdentidad = `${identidad}-${cedula}`;
 
@@ -93,24 +103,63 @@
       console.error(e);
     }
   };
+
+  const reiniciarClave = async () => {
+    try {
+      const modal: ModalSettings = {
+        type: "prompt",
+        // Data
+        title: "Reiniciar clave",
+        body: "Ingrese el correo del docente que desea reiniciar su clave..",
+        value: "",
+        valueAttr: {
+          type: "text",
+          minlength: 3,
+          maxlength: 50,
+          required: true,
+        },
+        // Returns the updated response value
+        response: (r: string) => {
+          reiniciarCorreo = r;
+          setTimeout(() => reiniciarForm?.requestSubmit(), 2000);
+        }
+      };
+      modalStore.trigger(modal);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 </script>
 
 <svelte:head>
   <title>Registrar docentes | Coordinadores | IUTEPAS</title>
 </svelte:head>
 <div class="h-screen flex flex-col lg:justify-center lg:items-center relative">
-  <button
-    type="button"
-    on:click={generate}
-    class="bg-blue-600 text-white px-4 py-2 rounded-full absolute top-5 right-5 flex gap-3"
-    ><Icon src={FileDownload} /> Lista de docentes con materias</button
-  >
+  <div class="absolute top-5 right-5 flex gap-3 justify-end">
+    <button
+      type="button"
+      on:click={reiniciarClave}
+      class="bg-pink-600 text-white px-4 py-2 rounded-full flex gap-3"
+      ><Icon src={LockAccess} /> Reiniciar clave</button
+    >
+    <button
+      type="button"
+      on:click={generate}
+      class="bg-blue-600 text-white px-4 py-2 rounded-full flex gap-3"
+      ><Icon src={FileDownload} /> Lista de docentes con materias</button
+    >
+  </div>
   <div
     class="container h-auto lg:w-2/3 md:w-3/4 mx-auto px-4 py-8 flex flex-col lg:flex-row justify-evenly items-center gap-3 rounded-xl bg-white"
   >
     <div class="p-8 w-full max-w-[410px] rounded-xl shadow h-full lg:w-1/2">
       <h2 class="text-2xl font-semibold mb-4 text-center">Añadir Docente</h2>
-      <form id="docente-form" method="post" use:enhance={handleSubmit} action="?/submit">
+      <form
+        id="docente-form"
+        method="post"
+        use:enhance={handleSubmit}
+        action="?/submit"
+      >
         <div class="mb-4">
           <label for="cedula" class="label">Cédula</label>
           <div
@@ -182,5 +231,8 @@
         separatorText="de"
       />
     </div>
+    <form method="post" action="?/reiniciar" bind:this={reiniciarForm}>
+      <input type="hidden" bind:value={reiniciarCorreo} id="docente" name="docente" />
+    </form>
   </div>
 </div>
