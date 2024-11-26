@@ -152,7 +152,7 @@
             </span>
           {:else}
             {#each materias as materia, n}
-              <span>
+              <span class="flex justify-between gap-x-3 w-full">
                 <h2>{materia.materia}</h2>
                 {#if planificaciones[n]}
                   <a
