@@ -1,27 +1,16 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
   import { enhance } from "$app/forms";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { onMount } from "svelte";
-  import type { ActionData, PageData, SubmitFunction } from "./$types";
-  import { moneyUsdConverter } from "$lib/resources/moneyConverter";
+  import DatePicker from "$lib/components/DatePicker.svelte";
+  import { triggerToast } from "$lib/utils/toast";
   import {
     RadioGroup,
     RadioItem,
-    Autocomplete,
-    popup,
-    SlideToggle,
+    SlideToggle
   } from "@skeletonlabs/skeleton";
-  import type {
-    AutocompleteOption,
-    PopupSettings,
-  } from "@skeletonlabs/skeleton";
-  import { DatePicker } from "attractions";
   import { Icon } from "@steeze-ui/svelte-icon";
   import { X } from "@steeze-ui/tabler-icons";
-  import { triggerToast } from "$lib/utils/toast";
   import moment from "moment";
+  import type { ActionData, PageData, SubmitFunction } from "./$types";
 
   export let data: PageData;
   export let form: ActionData;
@@ -164,11 +153,7 @@
           >Fecha del Pago</label
         >
         <DatePicker
-          format="%d-%m-%Y"
-          right="{true}"
           bind:value="{fecha_pago}"
-          inputClass="!rounded-lg"
-          disabledDates="{[{ start: tomorrow }]}"
         />
       </div>
       <div>

@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import type { Estudiante, Pago } from "../../../app";
   import type { PageData } from "./$types";
-  import { DatePicker } from "attractions";
+    import DatePicker from "$lib/components/DatePicker.svelte";;
   import { SlideToggle } from "@skeletonlabs/skeleton";
   import type {
     AutocompleteOption,
@@ -151,13 +151,7 @@
       {#if opcionReporte == "dia"}
         <label for="report-date" class="w-full"
           >Fecha de pagos
-          <input
-            class="input (date) px-5 py-2 text-blue-900 font-semibold rounded-lg mt-1 mb-3"
-            required
-            type="date"
-            max="{today}"
-            name="report-date"
-            id="report-date"
+          <DatePicker
             bind:value="{reportDay}"
           />
         </label>
@@ -165,19 +159,10 @@
         <div class="w-full">
           <p>Elija entre dos fechas</p>
           <DatePicker
-            format="%d-%m-%Y"
-            range
-            top="{false}"
-            locale="es-ES"
+          dateRange
             bind:value="{fechas}"
             on:change="{dateHasChanged}"
-            disabledDates="{[{ start: tomorrow }]}"
-            closeOnSelection
-          >
-            <svelte:fragment slot="between-inputs"
-              ><span class="mx-2">al</span></svelte:fragment
-            >
-          </DatePicker>
+          />
         </div>
       {/if}
 

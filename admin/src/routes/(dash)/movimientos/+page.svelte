@@ -5,8 +5,8 @@
     type TableSource,
   } from "@skeletonlabs/skeleton";
   import type { PageData } from "./$types";
-  import { DatePicker } from "attractions";
   import moment from "moment";
+  import DatePicker from "$lib/components/DatePicker.svelte";
 
   export let data: PageData;
 
@@ -107,16 +107,10 @@
       <label for="" class="label">Mostrar registros entre:</label>
       <div>
         <DatePicker
-          format="%d-%m-%Y"
-          range
-          top={false}
-          locale="es-ES"
+          dateRange
           bind:value={fecha}
           on:change={filtrarPorFecha}
         >
-          <svelte:fragment slot="between-inputs"
-            ><span class="mx-2">a</span></svelte:fragment
-          >
         </DatePicker>
       </div>
     </div>

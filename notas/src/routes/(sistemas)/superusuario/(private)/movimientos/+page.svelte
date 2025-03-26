@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Table, tableMapperValues, type TableSource } from "@skeletonlabs/skeleton";
   import type { PageData } from "./$types";
-  import { DatePicker } from "attractions";
+    import DatePicker from "$lib/components/DatePicker.svelte";;
   import moment from "moment";
 
   export let data: PageData;

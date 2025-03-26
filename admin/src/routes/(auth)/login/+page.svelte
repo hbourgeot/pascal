@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Lock, User } from "@steeze-ui/tabler-icons";
-  import { Icon } from "@steeze-ui/svelte-icon";
-  import Pascal from "$lib/images/pascalConFondo.png";
-  import type { ActionData } from "./$types";
   import { enhance } from "$app/forms";
+  import Pascal from "$lib/images/pascalConFondo.png";
   import { triggerToast } from "$lib/utils/toast";
+  import { Icon } from "@steeze-ui/svelte-icon";
+  import { Lock, User } from "@steeze-ui/tabler-icons";
+  import type { ActionData } from "./$types";
 
   export let form: ActionData;
   $: if (form?.message) {
@@ -21,11 +21,11 @@
 <section
   class="w-full h-screen flex flex-col justify-center items-center mb-15 xl:mb-0"
 >
-  <form
-    use:enhance
-    method="post"
-    class="max-w-[500px] flex flex-col justify-center items-center gap-5 login xl:h-[fit-content] xl:mt-0 w-3/4"
-  >
+<form
+use:enhance
+method="post"
+class="max-w-[500px] flex flex-col justify-center items-center gap-5 login xl:h-[fit-content] xl:mt-0 w-3/4"
+>
     <img src={Pascal} alt="Instituto Pascal" class="w-1/2" />
     <h1 class="text-3xl mb-8 font-bold flex justify-center items-center gap">
       Bienvenido

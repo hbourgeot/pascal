@@ -4,7 +4,7 @@
   import type { Estudiante } from "../../../app";
   import type { ActionData, PageData, SubmitFunction } from "./$types";
   import ModalLarge from "$lib/components/ModalLarge.svelte";
-  import { DatePicker } from "attractions";
+    import DatePicker from "$lib/components/DatePicker.svelte";;
   import { enhance } from "$app/forms";
   import { browser } from "$app/environment";
   import moment from "moment"
@@ -233,11 +233,7 @@
       <label for="" class="flex flex-col w-2/4">
         Fecha de nacimiento
         <DatePicker
-          format="%d-%m-%Y"
-          right="{true}"
-          inputClass="!rounded-lg"
           bind:value={fecha}
-          disabledDates="{[{ start: tomorrow }]}"
         />
       </label>
     </div>

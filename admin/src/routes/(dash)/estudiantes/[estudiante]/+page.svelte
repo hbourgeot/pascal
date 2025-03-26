@@ -3,7 +3,7 @@
   import { triggerToast } from "$lib/utils/toast";
   import moment from "moment";
   import type { ActionData, PageData } from "./$types";
-  import { DatePicker } from "attractions";
+    import DatePicker from "$lib/components/DatePicker.svelte";;
   import type { SubmitFunction } from "@sveltejs/kit";
   import { goto } from "$app/navigation";
   import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
@@ -113,11 +113,7 @@
       <label for="" class="flex flex-col w-2/4">
         Fecha de nacimiento
         <DatePicker
-          format="%d-%m-%Y"
-          right="{true}"
-          inputClass="!rounded-lg"
           bind:value="{fecha}"
-          disabledDates="{[{ start: tomorrow }]}"
         />
       </label>
     </div>
