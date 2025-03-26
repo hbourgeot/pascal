@@ -18,6 +18,9 @@ const config = {
     adapter: adapter({
       precompress: false,
     }),
+    csrf: {
+      checkOrigin: false,
+    }
   },
 };
 

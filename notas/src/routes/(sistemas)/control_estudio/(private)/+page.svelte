@@ -48,7 +48,6 @@
 
       <details
         open
-        class="flex w-full mx-auto flex-col items-center justify-center"
       >
         <summary
           class=" flex w-full h-[40px] items-center gap-4 pl-4 rounded border border-gray-200"
@@ -62,21 +61,15 @@
 
           Informacion del personal
         </summary>
-        <div
-          class="w-full mt-6 h-auto flex flex-wrap flex-col gap-6 [&>span]:w-full [&>span]:flex [&>span]:justify-between [&>span]:border-b [&>span]:border-gray-200"
+       <div
+          class="!w-full px-5 mt-6 h-auto grid grid-cols-2 gap-y-2 gap-x-10"
         >
-          <span>
             <h2>Cedula:</h2>
             <p>{controlEstudio.cedula}</p>
-          </span>
-          <span>
             <h2>Nombre completo:</h2>
             <p class="capitalize">{controlEstudio.nombre}</p>
-          </span>
-          <span>
             <h2>Teléfono:</h2>
             <p>{controlEstudio.telefono}</p>
-          </span>
         </div>
       </details>
     </div>

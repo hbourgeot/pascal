@@ -1,8 +1,12 @@
+import sys
+sys.path.insert(0, r'C:\\pascal\\back\\venv\\Lib\site-packages')
+
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from settings import settings
 from routes import pagos, students, usuario, docente, carreras, materias, billete, coordinacion, control, peticiones, \
     config, files,generar,SuperUsuario,transferencia, factura, trazabilidad, seguridad
+
 
 app = Flask(__name__)
 

@@ -42,7 +42,6 @@
 
       <details
         open
-        class="flex w-full mx-auto flex-col items-center justify-center"
       >
         <summary
           class=" flex w-full h-[40px] items-center gap-4 pl-4 rounded border border-gray-200"
@@ -57,27 +56,22 @@
           Informacion del docente
         </summary>
         <div
-          class="w-full mt-6 h-auto flex flex-wrap flex-col gap-6 [&>span]:w-full [&>span]:flex [&>span]:justify-between [&>span]:border-b [&>span]:border-gray-200"
+          class="!w-[70%] px-5 mt-6 h-auto grid grid-cols-2 gap-y-2 gap-x-10"
         >
-          <span>
             <h2>Cedula:</h2>
             <p>{docente.cedula}</p>
-          </span>
-          <span>
             <h2>Nombre completo:</h2>
             <p class="capitalize">{docente.nombre}</p>
-          </span>
-          <span>
             <h2>Teléfono:</h2>
             <p>{docente.telefono}</p>
-          </span>
         </div>
       </details>
       <details
-        class="flex w-full mx-auto flex-col my-5 items-center justify-center"
+      open
+      class="my-5"
       >
         <summary
-          class=" flex w-full h-[40px] items-center gap-4 pl-4 rounded border border-gray-200"
+          class="flex w-full h-[40px] items-center gap-4 pl-4 rounded border border-gray-200"
         >
           <span class="expand">
             <Icon src={ExpandMore} class="icon " />
@@ -89,7 +83,7 @@
           Materias impartidas
         </summary>
         <div
-          class="w-full mt-6 h-auto flex flex-wrap flex-col gap-6 [&>span]:w-full [&>span]:flex [&>span]:justify-between [&>span]:border-b [&>span]:border-gray-200"
+          class="w-[70%] px-5 mt-6 h-auto grid grid-cols-2 gap-y-2 gap-x-10"
         >
           {#if !materias.length}
             <span>
@@ -97,10 +91,8 @@
             </span>
           {:else}
             {#each materias as materia, n}
-              <span>
                 <h2>{materia.id}</h2>
                 <h2>{materia.nombre}</h2>
-              </span>
             {/each}
           {/if}
         </div>

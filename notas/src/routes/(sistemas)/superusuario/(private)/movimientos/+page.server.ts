@@ -38,7 +38,6 @@ export const load = (async ({ locals: { client } }) => {
     modulo: item.modulo,
   }));
 
-  console.log(logs);
   return { logs };
 }) satisfies PageServerLoad;
 

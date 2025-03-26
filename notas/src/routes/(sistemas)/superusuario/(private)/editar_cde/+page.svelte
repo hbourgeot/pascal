@@ -148,15 +148,9 @@
           />
         </div>
         <button
-          type="reset"
-          on:click={() => (disabled = true)}
-          class="bg-pink-600 rounded-2xl mr-2 text-white px-4 py-2 rounded"
-          >Resetear campos</button
-        >
-        <button
           type="submit"
           class="bg-blue-600 rounded-2xl text-white px-4 py-2 rounded"
-          >Editar personal</button
+          >Guardar</button
         >
       </form>
     </div>

@@ -53,9 +53,11 @@ $: tableSimple = {
         break;
     }
 
-    console.log(className, log)
-
     return className;
+  }
+
+   function print() {
+    window.print();
   }
 </script>
 
@@ -110,7 +112,7 @@ $: tableSimple = {
         tipo = "";
       }}>Resetear campos</button
     >
-    <button class="btn variant-filled bg-[#db0081] h-fit p-4"
+    <button class="btn variant-filled bg-[#db0081] h-fit p-4" on:click={print}
       >Descargar movimientos</button
     >
   </div>
@@ -154,5 +156,19 @@ $: tableSimple = {
 
   :global(.table tbody tr:nth-child(even)){
     background-color: unset !important;
+  }
+
+  @media print {
+    .hide-on-print {
+      display: none;
+    }
+
+    :global(.app-bar) {
+      display: none !important;
+    }
+
+    .table-container{
+      height: auto !important;
+    }
   }
 </style>

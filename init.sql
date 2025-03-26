@@ -5512,9 +5512,6 @@ INSERT INTO public.trazabilidad (id, accion, usuario, fecha, modulo, nivel_alert
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.usuarios (id, usuario, nombre, clave) VALUES (1, 'caja_pascal', 'Caja', 'sha256$m2ba9umlkOm921VQ$c1e2b387efebdd71927e768131f7b07f8bad0243e4c63a688ee4a3412d8e1412');
-INSERT INTO public.usuarios (id, usuario, nombre, clave) VALUES (2, 'caja_pascal', 'Caja', 'sha256$kjPLzBouIDnlTfFo$fb79845205993a5751c18d4ef720b1f700ed535e2bfe281a83246c560d40bb82');
-
 
 --
 -- TOC entry 5026 (class 0 OID 0)

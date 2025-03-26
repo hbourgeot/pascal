@@ -15,8 +15,7 @@ export const load = (async ({
   const materias = materiasData.filter(
     (materia) =>
       materia.id_carrera == params.carrera &&
-      materia.semestre == parseInt(params.semestre) &&
-      materia.ciclo == config.ciclo
+      materia.semestre == parseInt(params.semestre)
   );
 
   const carrera = data.carreras.find(
